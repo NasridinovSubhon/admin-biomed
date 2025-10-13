@@ -1,10 +1,11 @@
-import Table from "./Table"
+
+import TableComponent from './Table1';
 
 
 const App = () => {
   return (
     <div>
-      <Table />
+      <TableComponent/>
     </div>
   )
 }
