@@ -1,11 +1,31 @@
 
+import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider } from 'react-router-dom';
+import Layout from './layout';
 import TableComponent from './Table1';
-  
+import Categori from './pages/categori';
+import Filial from './pages/filial';
+import Otziv from './pages/otziv';
+
 
 const App = () => {
+
+  const router = createBrowserRouter(
+    createRoutesFromElements(
+      <>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<TableComponent />} />
+          <Route path='categoriy' element={<Categori />} />
+          <Route path='filial' element={<Filial />} />
+          <Route path='otziv' element={<Otziv />} />
+        </Route>
+      </>
+    )
+  )
+
   return (
     <div>
-      <TableComponent/>
+
+      <RouterProvider router={router} />
     </div>
   )
 }
