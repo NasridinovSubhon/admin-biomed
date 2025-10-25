@@ -3,14 +3,31 @@ import { create } from "zustand"
 
 export const adminDataStore = create((set, get) => ({
   dataCateg: [],
+  dataFilial: [],
   dataDoctors: [],
   dataCategById: [],
   dataZapis: [],
+  dataReviews: [],
 
   getDataCategory: async () => {
     try {
       const { data } = await axios.get(`https://cf6305f8832a1b76.mokky.dev/category`)
       set({ dataCateg: data })
+    } catch (error) { console.error(error) }
+  },
+
+  getDataFilial: async () => {
+    try {
+      const { data } = await axios.get(`https://cf6305f8832a1b76.mokky.dev/filial`)
+      set({ dataFilial: data })
+    } catch (error) { console.error(error) }
+  },
+
+  // Исправленный метод для отзывов
+  getDataReviews: async () => {
+    try {
+      const { data } = await axios.get(`https://cf6305f8832a1b76.mokky.dev/otziv`) // исправлен endpoint
+      set({ dataReviews: data })
     } catch (error) { console.error(error) }
   },
 
@@ -71,8 +88,7 @@ export const adminDataStore = create((set, get) => ({
     } catch (error) { console.error(error) }
   },
 
-  // В ваш adminDataStore добавьте следующие методы:
-
+  // Методы для докторов
   postDoctor: async (obj) => {
     try {
       await axios.post(`https://cf6305f8832a1b76.mokky.dev/doctors`, obj)
@@ -91,6 +107,51 @@ export const adminDataStore = create((set, get) => ({
     try {
       await axios.delete(`https://cf6305f8832a1b76.mokky.dev/doctors/${id}`)
       get().getDataDoctors()
+    } catch (error) { console.error(error) }
+  },
+
+  // Методы для филиалов
+  postFilial: async (obj) => {
+    try {
+      await axios.post(`https://cf6305f8832a1b76.mokky.dev/filial`, obj)
+      get().getDataFilial()
+    } catch (error) { console.error(error) }
+  },
+
+  updateFilial: async (id, obj) => {
+    try {
+      await axios.patch(`https://cf6305f8832a1b76.mokky.dev/filial/${id}`, obj)
+      get().getDataFilial()
+    } catch (error) { console.error(error) }
+  },
+
+  deleteFilial: async (id) => {
+    try {
+      await axios.delete(`https://cf6305f8832a1b76.mokky.dev/filial/${id}`)
+      get().getDataFilial()
+    } catch (error) { console.error(error) }
+  },
+
+  // Новые методы для видео-отзывов
+  postReview: async (obj) => {
+    try {
+      await axios.post(`https://cf6305f8832a1b76.mokky.dev/otziv`, obj)
+      get().getDataReviews()
+    } catch (error) { console.error(error) }
+  },
+
+  updateReview: async (id, obj) => {
+    try {
+
+      await axios.patch(`https://cf6305f8832a1b76.mokky.dev/otziv/${id}`, obj)
+      get().getDataReviews()
+    } catch (error) { console.error(error) }
+  },
+
+  deleteReview: async (id) => {
+    try {
+      await axios.delete(`https://cf6305f8832a1b76.mokky.dev/otziv/${id}`)
+      get().getDataReviews()
     } catch (error) { console.error(error) }
   }
 

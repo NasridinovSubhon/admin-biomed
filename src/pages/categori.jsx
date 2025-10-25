@@ -13,16 +13,16 @@ import { ArrowRight, Stethoscope, Heart, Brain, Eye, Baby, Scan, Activity, Spark
 import { toast } from "sonner";
 
 // Иконки для разных категорий
-const categoryIcons = {
-  "Сосудистая хирургия": Heart,
-  "Общая хирургия": Stethoscope,
-  "Колопроктология": Activity,
-  "Флебология": Activity,
-  "Гинекология": Baby,
-  "Доплерография": Scan,
-  "УЗИ-диагностика": Eye,
-  "default": Stethoscope
-};
+// const categoryIcons = {
+//   "Сосудистая хирургия": Heart,
+//   "Общая хирургия": Stethoscope,
+//   "Колопроктология": Activity,
+//   "Флебология": Activity,
+//   "Гинекология": Baby,
+//   "Доплерография": Scan,
+//   "УЗИ-диагностика": Eye,
+//   "default": Stethoscope
+// };
 
 // Медицинские изображения по умолчанию
 const defaultMedicalImages = [
@@ -65,10 +65,10 @@ const Categori = () => {
   };
 
   // Функция для получения иконки категории
-  const getCategoryIcon = (categoryName) => {
-    const IconComponent = categoryIcons[categoryName] || categoryIcons.default;
-    return <IconComponent className="h-5 w-5" />;
-  };
+  // const getCategoryIcon = (categoryName) => {
+  //   const IconComponent = categoryIcons[categoryName] || categoryIcons.default;
+  //   return <IconComponent className="h-5 w-5" />;
+  // };
 
   // Функция для конвертации файла в base64
   const convertToBase64 = (file) => {
@@ -221,17 +221,12 @@ const Categori = () => {
     <div className="min-h-screen bg-transparent from-background via-background to-muted/10 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Заголовок с кнопкой добавления */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-background/60 backdrop-blur-sm border border-border/40 mb-6 shadow-sm">
-            <Sparkles className="h-4 w-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Хизматрасониҳои тиббӣ</span>
-          </div>
+        
+        <div className="text-center mb-16 flex items-center justify-between">
           <h1 className="text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-            Хизматрасониҳои мо
+            Хизматрасониҳо
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-            Мо хизматрасониҳои тиббии пурсифатро бо истеъмоли навтарин технологияҳо пешниҳод мекунем
-          </p>
+
 
           {/* Кнопка добавления */}
           <Button
@@ -338,9 +333,9 @@ const Categori = () => {
           </div>
         )}
 
-        {/* Модальное окно добавления категории */}
+
         <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
-          <DialogContent className="sm:max-w-[500px] bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl ">
+          <DialogContent className="sm:max-w-[500px] bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl  max-h-[95vh] overflow-y-auto  scrollbar-thumb-transparent scrollbar-track-transparent   custom-scroll ">
             <DialogHeader className="border-b border-border/30 ">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Plus className="h-5 w-5 text-primary" />
@@ -406,14 +401,14 @@ const Categori = () => {
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleImageUpload(e, false)}
-                      className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 hidden"
+                    className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 hidden"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB
+                    {/* Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB */}
                   </p>
                 </div>
 
-                {/* Или использовать URL */}
+
 
               </div>
 
@@ -446,9 +441,9 @@ const Categori = () => {
           </DialogContent>
         </Dialog>
 
-        {/* Модальное окно редактирования категории */}
+
         <Dialog open={showEditForm} onOpenChange={setShowEditForm}>
-          <DialogContent className="sm:max-w-[500px] bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl">
+          <DialogContent className="sm:max-w-[500px] bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl  max-h-[95vh] overflow-y-auto  scrollbar-thumb-transparent scrollbar-track-transparent   custom-scroll">
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Edit className="h-5 w-5 text-primary" />
@@ -459,7 +454,7 @@ const Categori = () => {
               </DialogDescription>
             </DialogHeader>
             {editingCategory && (
-              <form onSubmit={handleEditCategory} className="space-y-6 py-2">
+              <form onSubmit={handleEditCategory} className="space-y-6 py-2 overflow-y-auto">
                 <div className="space-y-3">
                   <Label htmlFor="edit-sohaiKlinik" className="text-sm font-medium text-foreground/80">
                     Номи хизматрасонӣ *
@@ -516,41 +511,12 @@ const Categori = () => {
                       className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 hidden"
                     />
                     <p className="text-xs text-muted-foreground">
-                      Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB
+                      {/* Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB */}
                     </p>
                   </div>
 
                   {/* Или использовать URL */}
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-border/40" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background/95 px-2 text-muted-foreground">Ё</span>
-                    </div>
-                  </div>
 
-                  <Label htmlFor="edit-img" className="text-sm font-medium text-foreground/80">
-                    URL-и сурат
-                  </Label>
-                  <Input
-                    id="edit-img"
-                    value={editingCategory.img}
-                    onChange={(e) => setEditingCategory({ ...editingCategory, img: e.target.value })}
-                    className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                  />
-                  <div className="grid grid-cols-3 gap-2 mt-2">
-                    {defaultMedicalImages.map((img, index) => (
-                      <div
-                        key={index}
-                        className={`cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200 ${editingCategory.img === img ? 'border-primary ring-2 ring-primary/20' : 'border-border/50'
-                          }`}
-                        onClick={() => setEditingCategory({ ...editingCategory, img })}
-                      >
-                        <img src={img} alt={`Option ${index + 1}`} className="w-full h-16 object-cover" />
-                      </div>
-                    ))}
-                  </div>
                 </div>
 
                 <div className="flex justify-end space-x-3 pt-4 border-t border-border/30">
@@ -579,7 +545,7 @@ const Categori = () => {
           </DialogContent>
         </Dialog>
 
-        {/* Диалог подтверждения удаления */}
+
         <AlertDialog open={deleteDialog.open} onOpenChange={(open) => setDeleteDialog({ ...deleteDialog, open })}>
           <AlertDialogContent className="bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl">
             <AlertDialogHeader>
@@ -605,6 +571,7 @@ const Categori = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+
       </div>
     </div>
   );

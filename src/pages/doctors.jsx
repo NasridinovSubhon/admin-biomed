@@ -11,19 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { adminDataStore } from '@/app/zustand';
-import { Star, Plus, Edit, Trash2, X, Upload, Calendar, Award, GraduationCap, BriefcaseMedical, Clock } from 'lucide-react';
+import { Star, Plus, Edit, Trash2, X, Upload, Calendar, BriefcaseMedical } from 'lucide-react';
 import { toast } from "sonner";
-
-// Специальности врачей
-const specialties = {
-  "vascular": "Сосудистая хирургия",
-  "general": "Общая хирургия",
-  "coloproctology": "Колопроктология",
-  "phlebology": "Флебология",
-  "gynecology": "Гинекология",
-  "ultrasound": "УЗИ-диагностика",
-  "doppler": "Доплерография"
-};
 
 // Дни недели для расписания
 const weekDays = {
@@ -46,7 +35,16 @@ const defaultDoctorImages = [
 ];
 
 const Doctors = () => {
-  const { getDataDoctors, dataDoctors, postDoctor, updateDoctor, deleteDoctor } = adminDataStore();
+  const {
+    getDataDoctors,
+    dataDoctors,
+    postDoctor,
+    updateDoctor,
+    deleteDoctor,
+    getDataCategory,
+    dataCateg
+  } = adminDataStore();
+
   const [isLoading, setIsLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
@@ -56,7 +54,7 @@ const Doctors = () => {
   const [newDoctor, setNewDoctor] = useState({
     name: "",
     img: defaultDoctorImages[0],
-    specialty: "vascular",
+    specialty: "",
     qualifications: "",
     education: "",
     professional_activity: "",
@@ -75,11 +73,47 @@ const Doctors = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      await getDataDoctors();
+      await Promise.all([getDataDoctors(), getDataCategory()]);
       setIsLoading(false);
     };
     loadData();
-  }, [getDataDoctors]);
+  }, [getDataDoctors, getDataCategory]);
+
+  // Функция для исправления опечатки в названии услуги
+  const getCorrectedServiceName = (serviceName) => {
+    if (serviceName === "УЗИ-диагностикаa") {
+      return "УЗИ-диагностика";
+    }
+    return serviceName;
+  };
+
+  // Функция для получения списка специализаций из категорий (только sohaiKlinik)
+  const getSpecialtiesFromCategories = () => {
+    if (!dataCateg || dataCateg.length === 0) return [];
+
+    // Создаем Set для удаления дубликатов
+    const uniqueSpecialties = new Set();
+
+    dataCateg.forEach(category => {
+      if (category.sohaiKlinik) {
+        uniqueSpecialties.add(category.sohaiKlinik);
+      }
+    });
+
+    // Преобразуем Set обратно в массив объектов
+    return Array.from(uniqueSpecialties).map((specialty, index) => ({
+      id: index + 1, // Простой ID на основе индекса
+      name: getCorrectedServiceName(specialty),
+      value: specialty
+    }));
+  };
+
+  // Функция для получения названия специализации по значению
+  const getSpecialtyName = (specialtyValue) => {
+    const specialties = getSpecialtiesFromCategories();
+    const specialty = specialties.find(s => s.value === specialtyValue);
+    return specialty ? specialty.name : specialtyValue;
+  };
 
   // Функция для конвертации файла в base64
   const convertToBase64 = (file) => {
@@ -128,7 +162,7 @@ const Doctors = () => {
   const handleAddDoctor = async (e) => {
     e.preventDefault();
 
-    if (!newDoctor.name || !newDoctor.qualifications || !newDoctor.education) {
+    if (!newDoctor.name || !newDoctor.qualifications || !newDoctor.education || !newDoctor.specialty) {
       toast.error("Лутфан ҳамаи майдонҳои зарурӣ пур кунед");
       return;
     }
@@ -140,7 +174,7 @@ const Doctors = () => {
         setNewDoctor({
           name: "",
           img: defaultDoctorImages[0],
-          specialty: "vascular",
+          specialty: "",
           qualifications: "",
           education: "",
           professional_activity: "",
@@ -169,7 +203,7 @@ const Doctors = () => {
   const handleEditDoctor = async (e) => {
     e.preventDefault();
 
-    if (!editingDoctor?.name || !editingDoctor?.qualifications || !editingDoctor?.education) {
+    if (!editingDoctor?.name || !editingDoctor?.qualifications || !editingDoctor?.education || !editingDoctor?.specialty) {
       toast.error("Лутфан ҳамаи майдонҳои зарурӣ пур кунед");
       return;
     }
@@ -275,6 +309,8 @@ const Doctors = () => {
     </div>
   );
 
+  const specialties = getSpecialtiesFromCategories();
+
   return (
     <div className="min-h-screen bg-transparent p-6">
       <div className="max-w-7xl mx-auto">
@@ -287,11 +323,20 @@ const Doctors = () => {
           <Button
             onClick={() => setShowAddForm(true)}
             className="rounded-lg bg-primary hover:bg-primary/90"
+            disabled={specialties.length === 0}
           >
             <Plus className="w-4 h-4 mr-2" />
             Илова кардани доктор
           </Button>
         </div>
+
+        {specialties.length === 0 && !isLoading && (
+          <div className="mb-6 p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
+            <p className="text-yellow-800">
+              Ягон категория пайдо нашуд. Лутфан аввал категорияҳоро илова кунед, то ки докторҳо илова карда шаванд.
+            </p>
+          </div>
+        )}
 
         {/* Таблица врачей */}
         <Card className="bg-background/60 backdrop-blur-sm border-border/40 rounded-xl">
@@ -320,7 +365,6 @@ const Doctors = () => {
                     <TableHead>Специализатсия</TableHead>
                     <TableHead>Таҷриба</TableHead>
                     <TableHead>Рейтинг</TableHead>
-
                     <TableHead className="text-right">Амалҳо</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -344,7 +388,7 @@ const Doctors = () => {
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary" className="rounded-lg">
-                          {specialties[doctor.specialty]}
+                          {getSpecialtyName(doctor.specialty)}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -359,7 +403,6 @@ const Doctors = () => {
                           <span>{doctor.rating}</span>
                         </div>
                       </TableCell>
-
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button
@@ -388,9 +431,9 @@ const Doctors = () => {
           </CardContent>
         </Card>
 
-
+        {/* Модальное окно добавления врача */}
         <Dialog open={showAddForm} onOpenChange={setShowAddForm}>
-          <DialogContent className="sm:max-w-[600px] bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl max-h-[90vh] overflow-y-auto  scrollbar-thumb-transparent scrollbar-track-transparent   custom-scroll">
+          <DialogContent className="sm:max-w-[600px] bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl max-h-[90vh] overflow-y-auto custom-scroll">
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Plus className="h-5 w-5 text-primary" />
@@ -425,12 +468,12 @@ const Doctors = () => {
                     onValueChange={(value) => setNewDoctor({ ...newDoctor, specialty: value })}
                   >
                     <SelectTrigger className="rounded-lg">
-                      <SelectValue />
+                      <SelectValue placeholder="Специализатсияро интихоб кунед" />
                     </SelectTrigger>
                     <SelectContent>
-                      {Object.entries(specialties).map(([key, value]) => (
-                        <SelectItem key={key} value={key}>
-                          {value}
+                      {specialties.map((specialty) => (
+                        <SelectItem key={specialty.id} value={specialty.value}>
+                          {specialty.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -510,7 +553,6 @@ const Doctors = () => {
                     className="rounded-lg"
                   />
                 </div>
-
               </div>
 
               {/* Расписание */}
@@ -580,38 +622,6 @@ const Doctors = () => {
                     Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB
                   </p>
                 </div>
-
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border/40" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    {/* <span className="bg-background/95 px-2 text-muted-foreground">Ё</span> */}
-                  </div>
-                </div>
-{/*
-                <Label htmlFor="img" className="text-sm font-medium">
-                  URL-и сурат
-                </Label>
-                <Input
-                  id="img"
-                  value={newDoctor.img}
-                  onChange={(e) => setNewDoctor({ ...newDoctor, img: e.target.value })}
-                  placeholder="URL-и сурат"
-                  className="rounded-lg"
-                />
-                <div className="grid grid-cols-3 gap-2 mt-2">
-                  {defaultDoctorImages.map((img, index) => (
-                    <div
-                      key={index}
-                      className={`cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200 ${newDoctor.img === img ? 'border-primary ring-2 ring-primary/20' : 'border-border/50'
-                        }`}
-                      onClick={() => setNewDoctor({ ...newDoctor, img })}
-                    >
-                      <img src={img} alt={`Option ${index + 1}`} className="w-full h-16 object-cover" />
-                    </div>
-                  ))}
-                </div> */}
               </div>
 
               <div className="flex justify-end space-x-3 pt-4 border-t border-border/30">
@@ -627,6 +637,7 @@ const Doctors = () => {
                 <Button
                   type="submit"
                   className="rounded-lg bg-primary hover:bg-primary/90"
+                  disabled={!newDoctor.specialty}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Илова кардан
@@ -638,7 +649,7 @@ const Doctors = () => {
 
         {/* Модальное окно редактирования врача */}
         <Dialog open={showEditForm} onOpenChange={setShowEditForm}>
-          <DialogContent className="sm:max-w-[600px] bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl max-h-[90vh] overflow-y-auto scrollbar scrollbar-thumb-transparent scrollbar-track-transparent" >
+          <DialogContent className="sm:max-w-[600px] bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl max-h-[90vh] overflow-y-auto custom-scroll">
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Edit className="h-5 w-5 text-primary" />
@@ -676,9 +687,9 @@ const Doctors = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {Object.entries(specialties).map(([key, value]) => (
-                          <SelectItem key={key} value={key}>
-                            {value}
+                        {specialties.map((specialty) => (
+                          <SelectItem key={specialty.id} value={specialty.value}>
+                            {specialty.name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -724,7 +735,7 @@ const Doctors = () => {
                   />
                 </div>
 
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
                     <Label htmlFor="edit-experience" className="text-sm font-medium">
                       Таҷриба (сол) *
@@ -752,20 +763,6 @@ const Doctors = () => {
                       max="5"
                       value={editingDoctor.rating}
                       onChange={(e) => setEditingDoctor({ ...editingDoctor, rating: parseFloat(e.target.value) || 0 })}
-                      className="rounded-lg"
-                    />
-                  </div>
-
-                  <div className="space-y-3">
-                    <Label htmlFor="edit-reviews" className="text-sm font-medium">
-                      Отзывҳо
-                    </Label>
-                    <Input
-                      id="edit-reviews"
-                      type="number"
-                      min="0"
-                      value={editingDoctor.reviews}
-                      onChange={(e) => setEditingDoctor({ ...editingDoctor, reviews: parseInt(e.target.value) || 0 })}
                       className="rounded-lg"
                     />
                   </div>
@@ -837,37 +834,6 @@ const Doctors = () => {
                     <p className="text-xs text-muted-foreground">
                       Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB
                     </p>
-                  </div>
-
-                  <div className="relative">
-                    <div className="absolute inset-0 flex items-center">
-                      <span className="w-full border-t border-border/40" />
-                    </div>
-                    <div className="relative flex justify-center text-xs uppercase">
-                      <span className="bg-background/95 px-2 text-muted-foreground">Ё</span>
-                    </div>
-                  </div>
-
-                  <Label htmlFor="edit-img" className="text-sm font-medium">
-                    URL-и сурат
-                  </Label>
-                  <Input
-                    id="edit-img"
-                    value={editingDoctor.img}
-                    onChange={(e) => setEditingDoctor({ ...editingDoctor, img: e.target.value })}
-                    className="rounded-lg"
-                  />
-                  <div className="grid grid-cols-3 gap-2 mt-2">
-                    {defaultDoctorImages.map((img, index) => (
-                      <div
-                        key={index}
-                        className={`cursor-pointer border-2 rounded-lg overflow-hidden transition-all duration-200 ${editingDoctor.img === img ? 'border-primary ring-2 ring-primary/20' : 'border-border/50'
-                          }`}
-                        onClick={() => setEditingDoctor({ ...editingDoctor, img })}
-                      >
-                        <img src={img} alt={`Option ${index + 1}`} className="w-full h-16 object-cover object-top" />
-                      </div>
-                    ))}
                   </div>
                 </div>
 
