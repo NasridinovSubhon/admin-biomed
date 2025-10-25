@@ -5,6 +5,8 @@ import TableComponent from './Table1';
 import Categori from './pages/categori';
 import Filial from './pages/filial';
 import Otziv from './pages/otziv';
+import Users from './pages/users';
+import Doctors from './pages/doctors';
 
 
 const App = () => {
@@ -13,7 +15,9 @@ const App = () => {
     createRoutesFromElements(
       <>
         <Route path="/" element={<Layout />}>
-          <Route index element={<TableComponent />} />
+          <Route index element={<Users />} />
+
+          <Route path='doctors' element={<Doctors />} />
           <Route path='categoriy' element={<Categori />} />
           <Route path='filial' element={<Filial />} />
           <Route path='otziv' element={<Otziv />} />

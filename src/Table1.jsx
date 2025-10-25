@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "./components/ui/alert-dialog";
 import { Skeleton } from "./components/ui/skeleton";
 import { InputOTP, InputOTPGroup, InputOTPSlot } from "./components/ui/input-otp";
-import { Plus, Trash2, Clock, AlertTriangle, CheckCircle, User, Calendar, Phone } from "lucide-react";
+import { Plus, Trash2, Clock, AlertTriangle, CheckCircle, User, Calendar, Phone, CircleCheckBig } from "lucide-react";
 import { toast } from "sonner";
 
 // Функция для преобразования названия специализации в ключ
@@ -196,7 +196,7 @@ const TableComponent = () => {
       }
     }
 
-    // Филтр мекунем, то танҳо “озод”-ҳоро нишон диҳем
+    // Филтр мекунем, то танҳо "озод"-ҳоро нишон диҳем
     return availableSlots.filter(slot => slot.status === "free").map(slot => slot.time);
   };
 
@@ -282,23 +282,42 @@ const TableComponent = () => {
       }
     }
 
-    try {
-      await postZapis(newUser);
-      setShowAddForm(false);
-      setNewUser({
-        fullName: "",
-        service: "",
-        doctor: "",
-        date: "",
-        time: "",
-        phoneNumber: ""
-      });
-      setTimeConflict(null);
-      setAvailableTimes([]);
-      await getZapis();
-    } catch (error) {
-      console.error("Error adding user:", error);
-    }
+
+    toast.promise(
+      async () => {
+        await postZapis(newUser);
+        setShowAddForm(false);
+        setNewUser({
+          fullName: "",
+          service: "",
+          doctor: "",
+          date: "",
+          time: "",
+          phoneNumber: ""
+        });
+        setTimeConflict(null);
+        setAvailableTimes([]);
+        await getZapis();
+      },
+      {
+        loading: (
+          <div className="flex items-center gap-2">
+            Илова кардани қайд...
+          </div>
+        ),
+        success: (
+          <div className="flex items-center gap-2">
+            Қайд бомуваффақият илова шуд!
+          </div>
+        ),
+        error: (
+          <div className="flex items-center gap-2">
+            <CircleCheckBig className="h-4 w-4 text-red-500" />
+            Хатоги дар илова кардани қайд
+          </div>
+        )
+      }
+    );
   };
 
   const formatDate = (dateString) => {
@@ -361,13 +380,61 @@ const TableComponent = () => {
   const confirmDelete = async () => {
     try {
       if (deleteDialog.type === "all") {
-        for (const record of expiredRecords) {
-          await deleteZapis(record.id);
-        }
+        toast.promise(
+          async () => {
+            for (const record of expiredRecords) {
+              await deleteZapis(record.id);
+            }
+            await getZapis();
+          },
+          {
+            loading: (
+              <div className="flex items-center gap-2">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                Қайдҳо нест карда мешаванд...
+              </div>
+            ),
+            success: (
+              <div className="flex items-center gap-2">
+                <CircleCheckBig className="h-4 w-4 text-green-500" />
+                Қайдҳо бомуваффақият нест шуданд!
+              </div>
+            ),
+            error: (
+              <div className="flex items-center gap-2">
+                <CircleCheckBig className="h-4 w-4 text-red-500" />
+                Хатоги дар нест кардани қайдҳо
+              </div>
+            )
+          }
+        );
       } else {
-        await deleteZapis(deleteDialog.id);
+        toast.promise(
+          async () => {
+            await deleteZapis(deleteDialog.id);
+            await getZapis();
+          },
+          {
+            loading: (
+              <div className="flex items-center gap-2">
+                Қайд нест карда мешавад...
+              </div>
+            ),
+            success: (
+              <div className="flex items-center gap-2">
+
+                Қайд бомуваффақият нест шуд!
+              </div>
+            ),
+            error: (
+              <div className="flex items-center gap-2">
+                <CircleCheckBig className="h-4 w-4 text-red-500" />
+                Хатоги дар нест кардани қайд
+              </div>
+            )
+          }
+        );
       }
-      await getZapis();
     } catch (error) {
       console.error("Error deleting records:", error);
     } finally {
@@ -580,7 +647,7 @@ const TableComponent = () => {
           </div>
         )}
 
-
+        {/* Демо кнопка для тестирования Promise toaster */}
         <Button
           variant="outline"
           onClick={() => {
@@ -590,14 +657,30 @@ const TableComponent = () => {
                   setTimeout(() => resolve({ name: "Event" }), 2000)
                 ),
               {
-                loading: "Loading...",
-                success: (data) => `${data.name} has been created`,
-                error: "Error",
+                loading: (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+                    Loading...
+                  </div>
+                ),
+                success: (data) => (
+                  <div className="flex items-center gap-2">
+                    <CircleCheckBig className="h-4 w-4 text-green-500" />
+                    {data.name} has been created
+                  </div>
+                ),
+                error: (
+                  <div className="flex items-center gap-2">
+                    <CircleCheckBig className="h-4 w-4 text-red-500" />
+                    Error
+                  </div>
+                ),
               }
             )
           }}
+          className="hidden" // Скрыта, но оставлена для демонстрации
         >
-          Promise
+          Promise Demo
         </Button>
 
         {!isLoading && (

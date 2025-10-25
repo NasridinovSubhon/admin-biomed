@@ -1,6 +1,14 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+.custom-scroll {
+  scrollbar-color: transparent transparent;
+  scrollbar-width: thin;
+
+}
+
+
 .dark body {
    background-image: url("/bg-mac.jpg");
   background-size: cover;

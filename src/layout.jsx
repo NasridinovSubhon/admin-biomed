@@ -26,7 +26,7 @@ export default function Layout() {
         </div>
         <Outlet />
       </main>
-      <Toaster />
+      <Toaster /> 
 
     </SidebarProvider>
   );

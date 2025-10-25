@@ -24,8 +24,14 @@ import { Link } from "react-router-dom"
 
 const items = [
   {
-    title: "Doctors",
+    title: "Users",
     url: "/",
+    icon: Users,
+    badge: "12"
+  },
+  {
+    title: "Doctors",
+    url: "/doctors",
     icon: Users,
     badge: "12"
   },
