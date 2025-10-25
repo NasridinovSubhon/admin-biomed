@@ -61,7 +61,7 @@ export function AppSidebar() {
   const currentPath = location.pathname;
 
   return (
-    <Sidebar className="   backdrop-blur ml-1  h-[98vh] mt-[1vh] rounded-2xl  ">
+    <Sidebar className="   backdrop-blur ml-1   rounded-2xl  ">
 
       <div className="p-6 ">
         <div className="flex items-center gap-3 ">
