@@ -3,6 +3,7 @@
 
 
 .custom-scroll {
+  overflow-y: auto;
   scrollbar-color: transparent transparent;
   scrollbar-width: thin;
 

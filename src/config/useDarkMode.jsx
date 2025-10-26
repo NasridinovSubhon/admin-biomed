@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 export default function useDarkSide() {
   const [theme, setTheme] = useState(() => {
-    return localStorage.theme === "dark" ? "dark" : "light";
+    return localStorage.theme === "dark" ? "dark" : "dark";
   });
 
   useEffect(() => {
