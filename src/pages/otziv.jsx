@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -8,8 +8,21 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { adminDataStore } from '@/app/zustand';
-import { Plus, Edit, Trash2, X, Play, User, Calendar, Star, Upload, Video } from 'lucide-react';
+import { Plus, Edit, Trash2, X, Play, User, Calendar, Star, Upload, Video, Pause, Volume2, VolumeX, Info } from 'lucide-react';
 import { toast } from "sonner";
 
 const Otziv = () => {
@@ -19,8 +32,13 @@ const Otziv = () => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState({ open: false, id: null, name: "" });
   const [editingReview, setEditingReview] = useState(null);
-  const [selectedVideo, setSelectedVideo] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [playingIndex, setPlayingIndex] = useState(null);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isHovering, setIsHovering] = useState(null);
+  const [detailDialog, setDetailDialog] = useState({ open: false, review: null });
+
+  const videoRefs = useRef([]);
 
   const [newReview, setNewReview] = useState({
     name: "",
@@ -60,13 +78,11 @@ const Otziv = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Проверка типа файла
     if (!file.type.startsWith('video/')) {
       toast.error("Лутфан файли видеоро интихоб кунед");
       return;
     }
 
-    // Проверка размера файла (максимум 50MB)
     if (file.size > 50 * 1024 * 1024) {
       toast.error("Андозаи видео набояд аз 50MB зиёд бошад");
       return;
@@ -213,9 +229,42 @@ const Otziv = () => {
     });
   };
 
-  // Функция для открытия видео в модальном окне
-  const openVideoModal = (review) => {
-    setSelectedVideo(review);
+  // Функция для управления воспроизведением видео
+  const handleCardClick = (index) => {
+    if (playingIndex === index) {
+      videoRefs.current[index].pause();
+      setPlayingIndex(null);
+    } else {
+      // Останавливаем все другие видео
+      if (playingIndex !== null) {
+        videoRefs.current[playingIndex].pause();
+      }
+      videoRefs.current[index].play();
+      setPlayingIndex(index);
+    }
+  };
+
+  const toggleMute = (e) => {
+    e.stopPropagation();
+    setIsMuted(!isMuted);
+  };
+
+  // Функция для открытия деталей отзыва
+  const openDetailDialog = (review, e) => {
+    e.stopPropagation();
+    setDetailDialog({ open: true, review });
+  };
+
+  // Функция для обрезки текста с добавлением троеточия
+  const truncateText = (text, maxLength) => {
+    if (!text) return '';
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + '...';
+  };
+
+  // Проверка, нужно ли обрезать текст
+  const needsTruncation = (text, maxLength) => {
+    return text && text.length > maxLength;
   };
 
   // Форматирование размера файла
@@ -229,20 +278,9 @@ const Otziv = () => {
 
   // Скелетон для карточки
   const CardSkeleton = () => (
-    <Card className="overflow-hidden bg-background/50 backdrop-blur-sm border-border/50 rounded-2xl">
-      <Skeleton className="w-full h-48 rounded-none" />
-      <CardHeader className="pb-3">
-        <Skeleton className="h-6 w-3/4 rounded-lg" />
-        <Skeleton className="h-4 w-full rounded-lg mt-2" />
-        <Skeleton className="h-4 w-2/3 rounded-lg" />
-      </CardHeader>
-      <CardContent>
-        <div className="flex justify-between items-center">
-          <Skeleton className="h-4 w-16 rounded-lg" />
-          <Skeleton className="h-8 w-20 rounded-xl" />
-        </div>
-      </CardContent>
-    </Card>
+    <div className="relative rounded-xl overflow-hidden aspect-[9/16] shadow-lg bg-gray-100 dark:bg-gray-800">
+      <Skeleton className="w-full h-full rounded-none" />
+    </div>
   );
 
   // Компонент рейтинга
@@ -252,28 +290,26 @@ const Otziv = () => {
         {[...Array(5)].map((_, i) => (
           <Star
             key={i}
-            className={`h-4 w-4 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"
-              }`}
+            className={`h-4 w-4 ${i < rating ? "text-yellow-400 fill-yellow-400" : "text-gray-300"}`}
           />
         ))}
-        <span className="text-sm text-muted-foreground ml-2">{rating}.0</span>
       </div>
     );
   };
 
   return (
-    <div className="min-h-screen bg-transparent p-6">
+    <div className="min-h-screen bg-transparent w-[90%] m-auto">
       <div className="max-w-7xl mx-auto">
         {/* Заголовок с кнопкой добавления */}
-        <div className=" mb-16 flex items-center justify-between">
+        <div className="mb-16 flex items-center justify-between">
           <div>
-          <h1 className="text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
-            Видео-отзывы
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
-            Реальные отзывы наших пациентов - честные мнения о качестве обслуживания
-          </p>
-        </div>
+            <h1 className="text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+              Видео-отзывы
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
+              Реальные отзывы наших пациентов - честные мнения о качестве обслуживания
+            </p>
+          </div>
 
           {/* Кнопка добавления */}
           <Button
@@ -285,10 +321,10 @@ const Otziv = () => {
           </Button>
         </div>
 
-        {/* Сетка карточек видео-отзывов */}
+        {/* Карусель видео-отзывов */}
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, i) => (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
               <CardSkeleton key={i} />
             ))}
           </div>
@@ -303,153 +339,217 @@ const Otziv = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {dataReviews.map((review) => (
-              <Card
-                key={review.id}
-                className="group overflow-hidden bg-background/60 backdrop-blur-sm border-border/40 rounded-2xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] cursor-pointer hover:bg-background/70 border relative"
-              >
-                {/* Кнопки действий */}
-                <div className="absolute top-4 right-4 z-10 flex gap-2 group-hover:opacity-100 transition-opacity duration-300">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEditForm(review);
-                    }}
-                    className="h-8 w-8 p-0 rounded-lg bg-background/80 backdrop-blur-sm border border-border/40 hover:bg-blue-500/20 hover:border-blue-300/50"
+          <div className="relative">
+            <Carousel
+              className="w-full"
+              opts={{
+                align: "start",
+                loop: true,
+              }}
+            >
+              <CarouselContent className="-ml-4">
+                {dataReviews.map((review, index) => (
+                  <CarouselItem
+                    key={review.id}
+                    className="pl-4 max-w-[240px] basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
                   >
-                    <Edit className="h-3 w-3" />
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openDeleteDialog(review);
-                    }}
-                    className="h-8 w-8 p-0 rounded-lg bg-background/80 backdrop-blur-sm border border-border/40 hover:bg-red-500/20 hover:border-red-300/50"
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
+                    <Card className="group p-0 overflow-hidden bg-background/60 backdrop-blur-sm border-border/40 rounded-2xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] cursor-pointer hover:bg-background/70 border relative">
+                      {/* Кнопки действий */}
+                      <div className="absolute top-2 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditForm(review);
+                          }}
+                          className="h-8 w-8 p-0 rounded-lg bg-background/80 backdrop-blur-sm border border-border/40 hover:bg-blue-500/20 hover:border-blue-300/50"
+                        >
+                          <Edit className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openDeleteDialog(review);
+                          }}
+                          className="h-8 w-8 p-0 rounded-lg bg-background/80 backdrop-blur-sm border border-border/40 hover:bg-red-500/20 hover:border-red-300/50"
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
 
-                {/* Видео превью */}
-                <div
-                  className="w-full h-48 overflow-hidden relative cursor-pointer bg-gradient-to-br from-muted/50 to-muted/30"
-                  onClick={() => openVideoModal(review)}
-                >
-                  <div className="w-full h-full flex flex-col items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                    <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mb-3">
-                      <Video className="h-8 w-8 text-primary" />
-                    </div>
-                    <p className="text-sm text-muted-foreground text-center px-4">
-                      {review.videoFileName || "Видео файл"}
-                    </p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <Play className="h-4 w-4 text-primary" />
-                      <span className="text-xs text-muted-foreground">Дидан видео</span>
-                    </div>
-                  </div>
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300" />
-                </div>
+                      {/* Видео плеер */}
+                      <div
+                        className="relative rounded-xl overflow-hidden aspect-[9/16] shadow-lg group cursor-pointer transition-all duration-300 hover:shadow-xl bg-gray-100 dark:bg-gray-800"
+                        onClick={() => handleCardClick(index)}
+                        onMouseEnter={() => setIsHovering(index)}
+                        onMouseLeave={() => setIsHovering(null)}
+                      >
+                        {/* Градиент для текста */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/70 via-gray-900/10 to-transparent z-10"></div>
 
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors duration-300 line-clamp-1">
-                      {review.name}
-                    </CardTitle>
-                    <Badge className="bg-background/80 backdrop-blur-sm text-foreground border-border/40 rounded-lg px-2 py-1 text-xs font-medium">
-                      #{review.id}
-                    </Badge>
-                  </div>
+                        {/* Иконка воспроизведения */}
+                        {playingIndex !== index && (
+                          <div className="absolute top-2 left-2 z-20">
+                            <div className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                              <Play size={16} className="text-white ml-0.5" />
+                            </div>
+                          </div>
+                        )}
 
-                  {review.position && (
-                    <p className="text-sm text-muted-foreground flex items-center gap-2">
-                      <User className="h-3 w-3" />
-                      {review.position}
-                    </p>
-                  )}
+                        {/* Кнопка звука */}
+                        {playingIndex === index && (
+                          <div
+                            className="absolute top-2 right-2 z-30"
+                            onClick={toggleMute}
+                          >
+                            <div className="w-8 h-8 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center">
+                              {isMuted ? <VolumeX size={16} className="text-white" /> : <Volume2 size={16} className="text-white" />}
+                            </div>
+                          </div>
+                        )}
 
-                  <div className="flex items-center justify-between mt-2">
-                    <RatingStars rating={review.rating || 5} />
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Calendar className="h-3 w-3" />
-                      <span>{review.date}</span>
-                    </div>
-                  </div>
-                </CardHeader>
+                        {/* Видео элемент */}
+                        <video
+                          ref={(el) => (videoRefs.current[index] = el)}
+                          src={review.videoBase64}
+                          muted={isMuted}
+                          width="100%"
+                          height="100%"
+                          playsInline
+                          loop={false}
+                          className="w-full h-full object-cover"
+                          onEnded={() => setPlayingIndex(null)}
+                        />
 
-                <CardContent>
-                  {review.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-2">
-                      {review.description}
-                    </p>
-                  )}
+                        {/* Информация об отзыве */}
+                        <div className="absolute bottom-0 left-0 right-0 z-20 p-3">
+                          <div className="text-white">
+                            {/* Имя с обрезкой и тултипом */}
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <h3
+                                    className="font-semibold text-sm truncate max-w-[85%] cursor-pointer hover:underline"
+                                    onClick={(e) => openDetailDialog(review, e)}
+                                  >
+                                    {truncateText(review.name, 20)}
+                                  </h3>
+                                </TooltipTrigger>
+                                {needsTruncation(review.name, 20) && (
+                                  <TooltipContent>
+                                    <p>{review.name}</p>
+                                  </TooltipContent>
+                                )}
+                              </Tooltip>
+                            </TooltipProvider>
 
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openVideoModal(review)}
-                    className="w-full mt-4 rounded-xl bg-background/50 backdrop-blur-sm border-border/40 hover:bg-primary/20 hover:border-primary/50 transition-all duration-300 group/video"
-                  >
-                    <Play className="h-4 w-4 mr-2 group-hover/video:scale-110 transition-transform duration-300" />
-                    Дидан видео
-                  </Button>
-                </CardContent>
+                            {/* Должность с обрезкой и тултипом */}
+                            {review.position && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p
+                                      className="text-xs text-gray-200 truncate max-w-[85%] cursor-pointer hover:underline mt-1"
+                                      onClick={(e) => openDetailDialog(review, e)}
+                                    >
+                                      {truncateText(review.position, 25)}
+                                    </p>
+                                  </TooltipTrigger>
+                                  {needsTruncation(review.position, 25) && (
+                                    <TooltipContent>
+                                      <p>{review.position}</p>
+                                    </TooltipContent>
+                                  )}
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
 
-                {/* Акцентная полоса */}
-                <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-primary to-primary/50 group-hover:w-full transition-all duration-500"></div>
-              </Card>
-            ))}
+                            <div className="mt-2 flex items-center justify-between">
+                              <RatingStars rating={review.rating || 5} />
+                              <div className="flex items-center gap-1 text-xs text-gray-200">
+                                <Calendar className="h-3 w-3" />
+                                <span>{review.date}</span>
+                              </div>
+                            </div>
+
+                            {/* Кнопка для подробной информации */}
+                            {(review.description || needsTruncation(review.name, 20) || needsTruncation(review.position, 25)) && (
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="w-full mt-2 text-xs bg-black/30 hover:bg-black/50 text-white h-6"
+                                onClick={(e) => openDetailDialog(review, e)}
+                              >
+                                <Info className="h-3 w-3 mr-1" />
+                                Муфассал
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious className="absolute -left-12 top-1/2 transform -translate-y-1/2" />
+              <CarouselNext className="absolute -right-12 top-1/2 transform -translate-y-1/2" />
+            </Carousel>
           </div>
         )}
 
-        {/* Модальное окно просмотра видео */}
-        <Dialog open={!!selectedVideo} onOpenChange={(open) => !open && setSelectedVideo(null)}>
-          <DialogContent className="sm:max-w-4xl bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl">
+        {/* Диалог с детальной информацией об отзыве */}
+        <Dialog open={detailDialog.open} onOpenChange={(open) => setDetailDialog({ open, review: open ? detailDialog.review : null })}>
+          <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl">
             <DialogHeader className="border-b border-border/30 pb-4">
-              <DialogTitle className="text-xl font-semibold flex items-center gap-2">
-                <Play className="h-5 w-5 text-primary" />
-                {selectedVideo?.name}
+              <DialogTitle className="text-xl font-semibold">
+                {detailDialog.review?.name}
               </DialogTitle>
               <DialogDescription>
-                {selectedVideo?.position} • {selectedVideo?.date}
+                {detailDialog.review?.position}
               </DialogDescription>
             </DialogHeader>
 
-            {selectedVideo && (
+            {detailDialog.review && (
               <div className="space-y-4">
-                <div className="aspect-video w-full rounded-xl overflow-hidden bg-black">
-                  <video
-                    controls
-                    className="w-full h-full"
-                    src={selectedVideo.videoBase64}
-                    poster={selectedVideo.videoThumbnail}
-                  >
-                    Ваш браузер видео-файлҳоро дастгирӣ намекунад.
-                  </video>
+                <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-2">
+                    <RatingStars rating={detailDialog.review.rating || 5} />
+                    <span className="text-muted-foreground">
+                      {detailDialog.review.rating || 5}.0
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Calendar className="h-4 w-4" />
+                    <span>{detailDialog.review.date}</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-between text-sm text-muted-foreground">
-                  <span>Файли видео: {selectedVideo.videoFileName || "Номаълум"}</span>
-                  {selectedVideo.videoFileSize && (
-                    <span>Андоза: {formatFileSize(selectedVideo.videoFileSize)}</span>
+                {detailDialog.review.description && (
+                  <div className="bg-muted/30 rounded-lg p-4">
+                    <h4 className="font-medium text-sm mb-2">Тавсифи отзыв:</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {detailDialog.review.description}
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/30">
+                  <span>ID: #{detailDialog.review.id}</span>
+                  {detailDialog.review.videoFileName && (
+                    <span className="truncate max-w-[200px]">
+                      Файл: {detailDialog.review.videoFileName}
+                    </span>
                   )}
                 </div>
               </div>
             )}
 
-            {selectedVideo?.description && (
-              <div className="p-4 bg-muted/30 rounded-xl">
-                <p className="text-sm text-muted-foreground">{selectedVideo.description}</p>
-              </div>
-            )}
-
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-4">
               <Button
-                onClick={() => setSelectedVideo(null)}
+                onClick={() => setDetailDialog({ open: false, review: null })}
                 className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200"
               >
                 <X className="w-4 h-4 mr-2" />
