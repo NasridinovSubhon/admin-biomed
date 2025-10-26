@@ -63,9 +63,9 @@ export function AppSidebar() {
   return (
     <Sidebar className="   backdrop-blur ml-1   rounded-2xl  ">
 
-      <div className="p-6 nd">
+      <div className="pr-2 pl-6 nd">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between">
             {/* Иконкаи корбар (агар лозим шавад) */}
             {/* <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted shadow-sm">
         <Users className="h-5 w-5 text-muted-foreground" />
@@ -75,7 +75,7 @@ export function AppSidebar() {
           <img
             src="/logo.png"
             alt="Logo"
-            className="w-10 h-10 object-contain rounded-md"
+            className="w-14 h-14 object-contain rounded-md"
           />
         </div>
       </div>
@@ -86,16 +86,15 @@ export function AppSidebar() {
             Navigation
           </SidebarGroupLabel> */}
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className={"pr-2"}>
               {items.map((item) => {
                 const isActive = currentPath === item.url;
-
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
                       isActive={isActive}
-                      className="group relative mx-2 my-1"
+                      className="group relative mx-2 my-1 "
                     >
                       <Link
                         to={item.url}
