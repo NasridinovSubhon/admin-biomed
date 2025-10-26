@@ -264,9 +264,7 @@ const Filial = () => {
                     <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors duration-300">
                       {filial.name}
                     </CardTitle>
-                    <Badge className="bg-background/80 backdrop-blur-sm text-foreground border-border/40 rounded-lg px-2 py-1 text-xs font-medium">
-                      #{filial.id}
-                    </Badge>
+                    
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-3 w-3" />

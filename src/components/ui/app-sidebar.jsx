@@ -63,7 +63,7 @@ export function AppSidebar() {
   return (
     <Sidebar className="   backdrop-blur ml-1   rounded-2xl  ">
 
-      <div className="pr-2 pl-6 nd">
+      <div className="pr-2 pl-6 mt-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-between">
             {/* Иконкаи корбар (агар лозим шавад) */}
