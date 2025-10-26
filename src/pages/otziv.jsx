@@ -35,7 +35,7 @@ const Otziv = () => {
   const [uploading, setUploading] = useState(false);
   const [playingIndex, setPlayingIndex] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [isHovering, setIsHovering] = useState(null);
+  const [, setIsHovering] = useState(null);
   const [detailDialog, setDetailDialog] = useState({ open: false, review: null });
 
   const videoRefs = useRef([]);
@@ -268,13 +268,13 @@ const Otziv = () => {
   };
 
   // Форматирование размера файла
-  const formatFileSize = (bytes) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+  // const formatFileSize = (bytes) => {
+  //   if (bytes === 0) return '0 Bytes';
+  //   const k = 1024;
+  //   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  //   const i = Math.floor(Math.log(bytes) / Math.log(k));
+  //   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  // };
 
   // Скелетон для карточки
   const CardSkeleton = () => (
