@@ -298,15 +298,15 @@ const Otziv = () => {
   };
 
   return (
-    <div className="min-h-screen bg-transparent w-[90%] m-auto">
+    <div className="min-h-screen bg-transparent w-[90%] m-auto mt-7">
       <div className="max-w-7xl mx-auto">
         {/* Заголовок с кнопкой добавления */}
         <div className="mb-16 flex items-center justify-between">
           <div>
-            <h1 className="text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold tracking-tight mb-2">
               Видео-отзывы
             </h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-8">
               Реальные отзывы наших пациентов - честные мнения о качестве обслуживания
             </p>
           </div>

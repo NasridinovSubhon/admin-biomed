@@ -89,7 +89,6 @@ export function VideoText({
       <video ref={videoRef} className="w-full h-full object-cover" autoPlay={autoPlay} muted={muted} loop={loop} preload={preload} playsInline poster={poster} onLoadedData={handleVideoLoad} onError={handleVideoError}>
         { }
         <source src={src} type="video/mp4" />
-
         { }
         {sources.map((source, index) => <source key={index} src={source.src} type={source.type} />)}
 

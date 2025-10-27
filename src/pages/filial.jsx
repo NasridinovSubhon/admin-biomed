@@ -175,7 +175,7 @@ const Filial = () => {
         {/* Заголовок с кнопкой добавления */}
         <div className="text-center mb-16 flex items-center justify-between">
 
-          <h1 className="text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold tracking-tight mb-2">
             Филиалҳои мо
           </h1>
 
@@ -259,20 +259,20 @@ const Filial = () => {
                   </div>
                 </div>
 
-                <CardHeader className="pb-3">
+                <CardHeader className="pb-0 px-2">
                   <div className="flex items-start justify-between">
                     <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors duration-300">
                       {filial.name}
                     </CardTitle>
                   </div>
-                  
+
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-3 w-3" />
                     <span>Аз соли {filial.year}</span>
                   </div>
                 </CardHeader>
 
-                <CardContent className="space-y-4">
+                <CardContent className="space-y-4  p-0 px-2">
                   <div className="space-y-3">
                     <div className="flex items-start gap-2">
                       <MapPin className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0" />

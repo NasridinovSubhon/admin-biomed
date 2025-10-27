@@ -221,9 +221,9 @@ const Categori = () => {
     <div className="min-h-screen bg-transparent from-background via-background to-muted/10 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Заголовок с кнопкой добавления */}
-        
+
         <div className="text-center mb-16 flex items-center justify-between">
-          <h1 className="text-5xl font-bold tracking-tight mb-6 bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold tracking-tight mb-2">
             Хизматрасониҳо
           </h1>
 
