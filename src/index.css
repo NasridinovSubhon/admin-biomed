@@ -11,12 +11,13 @@
 
 
 .dark body {
-   background-image: url("/bg-mac.jpg");
+  background-image: url("/bg-mac.jpg");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
   background-repeat: no-repeat;
 }
+
 
 .sidebar {
   filter: blur(10px);

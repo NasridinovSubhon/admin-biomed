@@ -9,6 +9,7 @@ import { Toaster } from "./components/ui/sonner";
 
 
 
+
 export default function Layout() {
 
   const [, toggleTheme] = useDarkSide();
@@ -19,14 +20,16 @@ export default function Layout() {
 
       <main className="flex-1 p-4 items-center">
         <div className="flex items-center justify-between">
-          <button className="cursor-pointer">
+          <button className="cursor-pointer flex items-center ">
             <SidebarTrigger />
+
           </button>
           <AnimatedThemeToggler onClick={toggleTheme} />
+
         </div>
         <Outlet />
       </main>
-      <Toaster /> 
+      <Toaster />
 
     </SidebarProvider>
   );

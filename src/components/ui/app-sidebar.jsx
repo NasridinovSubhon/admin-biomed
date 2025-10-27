@@ -1,26 +1,10 @@
-import {
+import { motion } from "framer-motion"
 
-  Building,
-  Star,
-  Users,
-  FolderOpen,
-
-  UserCircle,
-  ChevronRight
-} from "lucide-react"
+import { Building, Star, Users, FolderOpen, UserCircle, ChevronRight } from "lucide-react"
 import { useLocation } from "react-router-dom"
-
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar"
+import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { Link } from "react-router-dom"
+import Videotext from "../textVideo"
 
 const items = [
   {
@@ -53,7 +37,6 @@ const items = [
     icon: Star,
     badge: "47"
   },
-
 ]
 
 export function AppSidebar() {
@@ -61,30 +44,22 @@ export function AppSidebar() {
   const currentPath = location.pathname;
 
   return (
-    <Sidebar className="   backdrop-blur ml-1   rounded-2xl  ">
-
+    <Sidebar className="backdrop-blur ml-1 rounded-2xl">
       <div className="pr-2 pl-6 mt-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center justify-between">
-            {/* Иконкаи корбар (агар лозим шавад) */}
-            {/* <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-muted shadow-sm">
-        <Users className="h-5 w-5 text-muted-foreground" />
-      </div> */}
-            <h1 className="text-lg font-bold tracking-tight">Admin Panel</h1>
-          </div>
           <img
             src="/logo.png"
             alt="Logo"
-            className="w-14 h-14 object-contain rounded-md"
+            className="w-14 h-14 -mt-2 object-contain rounded-md"
           />
+          <div className="flex  items-center justify-between ">
+            <Videotext />
+          </div>
         </div>
       </div>
 
       <SidebarContent>
         <SidebarGroup>
-          {/* <SidebarGroupLabel className="px-6 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-            Navigation
-          </SidebarGroupLabel> */}
           <SidebarGroupContent>
             <SidebarMenu className={"pr-2"}>
               {items.map((item) => {
@@ -94,25 +69,39 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={isActive}
-                      className="group relative mx-2 my-1 "
+                      className="group relative mx-2 my-1"
                     >
                       <Link
                         to={item.url}
-                        className="flex items-center gap-3 px-3 py-5 rounded-lg transition-all duration-200 hover:bg-accent hover:shadow-sm"
+                        className="flex items-center gap-3 px-3 py-5 rounded-lg transition-all duration-200 hover:bg-accent hover:shadow-sm relative"
                       >
-                        <div className={`p-2 rounded-lg transition-colors ${isActive
+
+                        {isActive && (
+                          <motion.div
+                            layoutId="activeTab"
+                            className="absolute inset-0 rounded-lg bg-blue-50/80 backdrop-blur-sm dark:bg-blue-500/10 dark:backdrop-blur-md"
+                            transition={{
+                              type: "spring",
+                              stiffness: 500,
+                              damping: 30
+                            }}
+                          />
+                        )}
+
+                        <div className={`p-2 rounded-lg transition-colors relative z-10 ${isActive
                           ? "bg-primary text-primary-foreground"
                           : "bg-muted text-muted-foreground group-hover:bg-accent"
                           }`}>
                           <item.icon className="h-4 w-4" />
                         </div>
 
-                        <span className={`font-medium flex-1 transition-colors ${isActive ? "text-foreground" : "text-foreground/80"
+                        <span className={`font-medium flex-1 transition-colors relative z-10 ${isActive ? "text-foreground" : "text-foreground/80"
                           }`}>
                           {item.title}
                         </span>
 
-                        <ChevronRight className={`h-4 w-4 transition-transform duration-200 ${isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+
+                        <ChevronRight className={`h-4 w-4 transition-transform duration-200 relative z-10 ${isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                           } ${isActive ? "rotate-90" : ""}`} />
                       </Link>
                     </SidebarMenuButton>
@@ -137,7 +126,6 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
-
 
 // import { useState, useEffect } from "react";
 // import {

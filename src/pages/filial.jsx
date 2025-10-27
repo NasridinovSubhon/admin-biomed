@@ -264,8 +264,8 @@ const Filial = () => {
                     <CardTitle className="text-lg font-semibold group-hover:text-primary transition-colors duration-300">
                       {filial.name}
                     </CardTitle>
-                    
                   </div>
+                  
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-3 w-3" />
                     <span>Аз соли {filial.year}</span>
