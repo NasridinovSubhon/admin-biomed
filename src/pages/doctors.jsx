@@ -380,7 +380,7 @@ const Doctors = () => {
                           />
                           <div>
                             <div className="font-medium">{doctor.name}</div>
-                            <div className="text-sm text-muted-foreground line-clamp-1">
+                            <div className="text-sm text-muted-foreground line-clamp-1 max-w-xs  ">
                               {doctor.qualifications}
                             </div>
                           </div>
@@ -483,22 +483,23 @@ const Doctors = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="qualifications" className="text-sm font-medium">
-                  Квалификатсия *
+                  дар бораи духтур
                 </Label>
-                <Input
-                  id="qualifications"
-                  required
-                  value={newDoctor.qualifications}
-                  onChange={(e) => setNewDoctor({ ...newDoctor, qualifications: e.target.value })}
-                  placeholder="Сосудистый хирург высшей категории"
-                  className="rounded-lg"
+                <Textarea
+                  id="professional_activity"
+                  value={newDoctor.professional_activity}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, professional_activity: e.target.value })}
+                  placeholder="Проведение операций на сосудах, ангиографии..."
+                  className="rounded-lg min-h-[80px]"
                 />
+
               </div>
 
               <div className="space-y-3">
                 <Label htmlFor="education" className="text-sm font-medium">
                   Маълумот *
                 </Label>
+
                 <Textarea
                   id="education"
                   required
@@ -511,14 +512,15 @@ const Doctors = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="professional_activity" className="text-sm font-medium">
-                  Фаъолияти касбӣ
+                  фаолияташ
                 </Label>
-                <Textarea
-                  id="professional_activity"
-                  value={newDoctor.professional_activity}
-                  onChange={(e) => setNewDoctor({ ...newDoctor, professional_activity: e.target.value })}
-                  placeholder="Проведение операций на сосудах, ангиографии..."
-                  className="rounded-lg min-h-[80px]"
+                <Input
+                  id="qualifications"
+                  required
+                  value={newDoctor.qualifications}
+                  onChange={(e) => setNewDoctor({ ...newDoctor, qualifications: e.target.value })}
+                  placeholder="Сосудистый хирург высшей категории"
+                  className="rounded-lg"
                 />
               </div>
 

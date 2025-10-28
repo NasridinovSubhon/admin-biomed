@@ -141,8 +141,9 @@ const Otziv = () => {
   const handleAddReview = async (e) => {
     e.preventDefault();
 
-    if (!newReview.name || !newReview.videoBase64) {
-      toast.error("Лутфан ном ва видеоро ворид кунед");
+    // Убрана проверка на имя, теперь только видео обязательно
+    if (!newReview.videoBase64) {
+      toast.error("Лутфан видеоро ворид кунед");
       return;
     }
 
@@ -172,8 +173,9 @@ const Otziv = () => {
   const handleEditReview = async (e) => {
     e.preventDefault();
 
-    if (!editingReview?.name || !editingReview?.videoBase64) {
-      toast.error("Лутфан ном ва видеоро ворид кунед");
+    // Убрана проверка на имя, теперь только видео обязательно
+    if (!editingReview?.videoBase64) {
+      toast.error("Лутфан видеоро ворид кунед");
       return;
     }
 
@@ -225,7 +227,7 @@ const Otziv = () => {
     setDeleteDialog({
       open: true,
       id: review.id,
-      name: review.name
+      name: review.name || "Беном"
     });
   };
 
@@ -249,32 +251,6 @@ const Otziv = () => {
     setIsMuted(!isMuted);
   };
 
-  // Функция для открытия деталей отзыва
-  const openDetailDialog = (review, e) => {
-    e.stopPropagation();
-    setDetailDialog({ open: true, review });
-  };
-
-  // Функция для обрезки текста с добавлением троеточия
-  const truncateText = (text, maxLength) => {
-    if (!text) return '';
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
-  };
-
-  // Проверка, нужно ли обрезать текст
-  const needsTruncation = (text, maxLength) => {
-    return text && text.length > maxLength;
-  };
-
-  // Форматирование размера файла
-  // const formatFileSize = (bytes) => {
-  //   if (bytes === 0) return '0 Bytes';
-  //   const k = 1024;
-  //   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  //   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  //   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  // };
 
   // Скелетон для карточки
   const CardSkeleton = () => (
@@ -427,45 +403,47 @@ const Otziv = () => {
                         {/* Информация об отзыве */}
                         <div className="absolute bottom-0 left-0 right-0 z-20 p-3">
                           <div className="text-white">
-                            {/* Имя с обрезкой и тултипом */}
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <h3
-                                    className="font-semibold text-sm truncate max-w-[85%] cursor-pointer hover:underline"
-                                    onClick={(e) => openDetailDialog(review, e)}
-                                  >
-                                    {truncateText(review.name, 20)}
-                                  </h3>
-                                </TooltipTrigger>
-                                {needsTruncation(review.name, 20) && (
-                                  <TooltipContent>
-                                    <p>{review.name}</p>
-                                  </TooltipContent>
-                                )}
-                              </Tooltip>
-                            </TooltipProvider>
+                            {/* Имя с обрезкой и тултипом - теперь необязательное */}
+                              {/* {review.name && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <h3
+                                        className="font-semibold text-sm truncate max-w-[85%] cursor-pointer hover:underline"
+                                        onClick={(e) => openDetailDialog(review, e)}
+                                      >
+                                        {truncateText(review.name, 20)}
+                                      </h3>
+                                    </TooltipTrigger>
+                                    {needsTruncation(review.name, 20) && (
+                                      <TooltipContent>
+                                        <p>{review.name}</p>
+                                      </TooltipContent>
+                                    )}
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )}
 
-                            {/* Должность с обрезкой и тултипом */}
-                            {review.position && (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <p
-                                      className="text-xs text-gray-200 truncate max-w-[85%] cursor-pointer hover:underline mt-1"
-                                      onClick={(e) => openDetailDialog(review, e)}
-                                    >
-                                      {truncateText(review.position, 25)}
-                                    </p>
-                                  </TooltipTrigger>
-                                  {needsTruncation(review.position, 25) && (
-                                    <TooltipContent>
-                                      <p>{review.position}</p>
-                                    </TooltipContent>
-                                  )}
-                                </Tooltip>
-                              </TooltipProvider>
-                            )}
+
+                              {review.position && (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <p
+                                        className="text-xs text-gray-200 truncate max-w-[85%] cursor-pointer hover:underline mt-1"
+                                        onClick={(e) => openDetailDialog(review, e)}
+                                      >
+                                        {truncateText(review.position, 25)}
+                                      </p>
+                                    </TooltipTrigger>
+                                    {needsTruncation(review.position, 25) && (
+                                      <TooltipContent>
+                                        <p>{review.position}</p>
+                                      </TooltipContent>
+                                    )}
+                                  </Tooltip>
+                                </TooltipProvider>
+                              )} */}
 
                             <div className="mt-2 flex items-center justify-between">
                               <RatingStars rating={review.rating || 5} />
@@ -476,7 +454,7 @@ const Otziv = () => {
                             </div>
 
                             {/* Кнопка для подробной информации */}
-                            {(review.description || needsTruncation(review.name, 20) || needsTruncation(review.position, 25)) && (
+                            {/* {(review.description || review.name || review.position) && (
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -486,7 +464,7 @@ const Otziv = () => {
                                 <Info className="h-3 w-3 mr-1" />
                                 Муфассал
                               </Button>
-                            )}
+                            )} */}
                           </div>
                         </div>
                       </div>
@@ -505,10 +483,10 @@ const Otziv = () => {
           <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl">
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold">
-                {detailDialog.review?.name}
+                {detailDialog.review?.name || "Беном"}
               </DialogTitle>
               <DialogDescription>
-                {detailDialog.review?.position}
+                {detailDialog.review?.position || "Видео-отзыв"}
               </DialogDescription>
             </DialogHeader>
 
@@ -568,37 +546,10 @@ const Otziv = () => {
                 Илова кардани видео-отзыв
               </DialogTitle>
               <DialogDescription>
-                Маълумоти видео-отзыви навро ворид кунед
+                Файли видеоро интихоб кунед. Ном ва дигар маълумотҳо ихтиёрӣ мебошанд.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddReview} className="space-y-6 py-2">
-              <div className="space-y-3">
-                <Label htmlFor="name" className="text-sm font-medium text-foreground/80">
-                  Номи пациент *
-                </Label>
-                <Input
-                  id="name"
-                  required
-                  value={newReview.name}
-                  onChange={(e) => setNewReview({ ...newReview, name: e.target.value })}
-                  placeholder="Фаррух Неъматов"
-                  className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="position" className="text-sm font-medium text-foreground/80">
-                  Вазифа ё услуга
-                </Label>
-                <Input
-                  id="position"
-                  value={newReview.position}
-                  onChange={(e) => setNewReview({ ...newReview, position: e.target.value })}
-                  placeholder="Бемори дил, услугаи ECG"
-                  className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                />
-              </div>
-
               {/* Поле загрузки видео */}
               <div className="space-y-3">
                 <Label htmlFor="videoFile" className="text-sm font-medium text-foreground/80">
@@ -645,58 +596,6 @@ const Otziv = () => {
                     )}
                   </label>
                 </div>
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="rating" className="text-sm font-medium text-foreground/80">
-                  Рейтинг
-                </Label>
-                <div className="flex items-center gap-2">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      type="button"
-                      onClick={() => setNewReview({ ...newReview, rating: star })}
-                      className="p-1 hover:scale-110 transition-transform duration-200"
-                    >
-                      <Star
-                        className={`h-6 w-6 ${star <= newReview.rating
-                          ? "text-yellow-400 fill-yellow-400"
-                          : "text-gray-300"
-                          }`}
-                      />
-                    </button>
-                  ))}
-                  <span className="text-sm text-muted-foreground ml-2">
-                    {newReview.rating}.0
-                  </span>
-                </div>
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="date" className="text-sm font-medium text-foreground/80">
-                  Сана
-                </Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={newReview.date}
-                  onChange={(e) => setNewReview({ ...newReview, date: e.target.value })}
-                  className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                />
-              </div>
-
-              <div className="space-y-3">
-                <Label htmlFor="description" className="text-sm font-medium text-foreground/80">
-                  Тавсифи кӯтоҳ
-                </Label>
-                <Textarea
-                  id="description"
-                  value={newReview.description}
-                  onChange={(e) => setNewReview({ ...newReview, description: e.target.value })}
-                  placeholder="Тавсифи кӯтоҳ дар бораи отзыв..."
-                  className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 min-h-[80px]"
-                />
               </div>
 
               <div className="flex justify-end space-x-3 pt-4 border-t border-border/30">
@@ -749,14 +648,14 @@ const Otziv = () => {
               <form onSubmit={handleEditReview} className="space-y-6 py-2">
                 <div className="space-y-3">
                   <Label htmlFor="edit-name" className="text-sm font-medium text-foreground/80">
-                    Номи пациент *
+                    Номи пациент
                   </Label>
                   <Input
                     id="edit-name"
-                    required
-                    value={editingReview.name}
+                    value={editingReview.name || ''}
                     onChange={(e) => setEditingReview({ ...editingReview, name: e.target.value })}
                     className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                    placeholder="Номи ихтиёрӣ"
                   />
                 </div>
 
@@ -769,6 +668,7 @@ const Otziv = () => {
                     value={editingReview.position || ''}
                     onChange={(e) => setEditingReview({ ...editingReview, position: e.target.value })}
                     className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                    placeholder="Вазифа ё услуга"
                   />
                 </div>
 
@@ -868,6 +768,7 @@ const Otziv = () => {
                     value={editingReview.description || ''}
                     onChange={(e) => setEditingReview({ ...editingReview, description: e.target.value })}
                     className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 min-h-[80px]"
+                    placeholder="Тавсифи кӯтоҳ дар бораи отзыв..."
                   />
                 </div>
 

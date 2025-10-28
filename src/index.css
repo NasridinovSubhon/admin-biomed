@@ -6,9 +6,7 @@
   overflow-y: auto;
   scrollbar-color: transparent transparent;
   scrollbar-width: thin;
-
 }
-
 
 .dark body {
   background-image: url("/bg-mac.jpg");
