@@ -1,16 +1,15 @@
 import { motion } from "framer-motion"
 
-import { Building, Star, Users, FolderOpen, UserCircle, ChevronRight } from "lucide-react"
+import { Building, Star, Users, FolderOpen, UserCircle, ChevronRight, ChartLine } from "lucide-react"
 import { useLocation } from "react-router-dom"
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar"
 import { Link } from "react-router-dom"
-import Videotext from "../textVideo"
 
 const items = [
   {
-    title: "Users",
+    title: "Dashboard",
     url: "/",
-    icon: Users,
+    icon: ChartLine,
     badge: "12"
   },
   {
@@ -47,14 +46,7 @@ export function AppSidebar() {
     <Sidebar className="backdrop-blur ml-1 rounded-2xl">
       <div className="pr-2 pl-6 mt-1.5">
         <div className="flex items-center justify-between">
-          <img
-            src="/logo.png"
-            alt="Logo"
-            className="w-14 h-14 -mt-2 object-contain rounded-md"
-          />
-          <div className="flex  items-center justify-between ">
-            <Videotext />
-          </div>
+          <h1 className="text-2xl font-bold mb-3 mt-3" >Admin Panel</h1>
         </div>
       </div>
 

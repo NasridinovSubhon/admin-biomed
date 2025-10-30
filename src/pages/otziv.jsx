@@ -331,7 +331,7 @@ const Otziv = () => {
                   >
                     <Card className="group p-0 overflow-hidden bg-background/60 backdrop-blur-sm border-border/40 rounded-2xl transition-all duration-500 hover:shadow-2xl hover:scale-[1.02] cursor-pointer hover:bg-background/70 border relative">
                       {/* Кнопки действий */}
-                      <div className="absolute top-2 right-2 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute top-2 right-2 z-20 flex gap-2 transition-opacity duration-300">
                         <Button
                           variant="secondary"
                           size="sm"
