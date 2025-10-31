@@ -79,12 +79,12 @@ const Otziv = () => {
     if (!file) return;
 
     if (!file.type.startsWith('video/')) {
-      toast.error("Лутфан файли видеоро интихоб кунед");
+      toast.error("Пожалуйста, выберите видео файл");
       return;
     }
 
     if (file.size > 50 * 1024 * 1024) {
-      toast.error("Андозаи видео набояд аз 50MB зиёд бошад");
+      toast.error("Размер видео не должен превышать 50MB");
       return;
     }
 
@@ -96,10 +96,10 @@ const Otziv = () => {
         videoBase64: videoData.base64,
         videoFileName: videoData.fileName
       });
-      toast.success("Видео бомуваффақият бор карда шуд");
+      toast.success("Видео успешно загружено");
     } catch (error) {
       console.error('Error converting video:', error);
-      toast.error("Хатоги дар боркунии видео");
+      toast.error("Ошибка при загрузке видео");
     } finally {
       setUploading(false);
     }
@@ -111,12 +111,12 @@ const Otziv = () => {
     if (!file) return;
 
     if (!file.type.startsWith('video/')) {
-      toast.error("Лутфан файли видеоро интихоб кунед");
+      toast.error("Пожалуйста, выберите видео файл");
       return;
     }
 
     if (file.size > 50 * 1024 * 1024) {
-      toast.error("Андозаи видео набояд аз 50MB зиёд бошад");
+      toast.error("Размер видео не должен превышать 50MB");
       return;
     }
 
@@ -128,10 +128,10 @@ const Otziv = () => {
         videoBase64: videoData.base64,
         videoFileName: videoData.fileName
       });
-      toast.success("Видео бомуваффақият бор карда шуд");
+      toast.success("Видео успешно загружено");
     } catch (error) {
       console.error('Error converting video:', error);
-      toast.error("Хатоги дар боркунии видео");
+      toast.error("Ошибка при загрузке видео");
     } finally {
       setUploading(false);
     }
@@ -143,7 +143,7 @@ const Otziv = () => {
 
     // Убрана проверка на имя, теперь только видео обязательно
     if (!newReview.videoBase64) {
-      toast.error("Лутфан видеоро ворид кунед");
+      toast.error("Пожалуйста, загрузите видео");
       return;
     }
 
@@ -162,9 +162,9 @@ const Otziv = () => {
         });
       },
       {
-        loading: "Илова кардани видео-отзыв...",
-        success: "Видео-отзыв бомуваффақият илова шуд!",
-        error: "Хатоги дар илова кардани видео-отзыв"
+        loading: "Добавление видео-отзыва...",
+        success: "Видео-отзыв успешно добавлен!",
+        error: "Ошибка при добавлении видео-отзыва"
       }
     );
   };
@@ -175,7 +175,7 @@ const Otziv = () => {
 
     // Убрана проверка на имя, теперь только видео обязательно
     if (!editingReview?.videoBase64) {
-      toast.error("Лутфан видеоро ворид кунед");
+      toast.error("Пожалуйста, загрузите видео");
       return;
     }
 
@@ -194,9 +194,9 @@ const Otziv = () => {
         setEditingReview(null);
       },
       {
-        loading: "Таҳрир кардани видео-отзыв...",
-        success: "Видео-отзыв бомуваффақият таҳрир шуд!",
-        error: "Хатоги дар таҳрир кардани видео-отзыв"
+        loading: "Редактирование видео-отзыва...",
+        success: "Видео-отзыв успешно отредактирован!",
+        error: "Ошибка при редактировании видео-отзыва"
       }
     );
   };
@@ -209,9 +209,9 @@ const Otziv = () => {
         setDeleteDialog({ open: false, id: null, name: "" });
       },
       {
-        loading: "Нест кардани видео-отзыв...",
-        success: "Видео-отзыв бомуваффақият нест шуд!",
-        error: "Хатоги дар нест кардани видео-отзыв"
+        loading: "Удаление видео-отзыва...",
+        success: "Видео-отзыв успешно удален!",
+        error: "Ошибка при удалении видео-отзыва"
       }
     );
   };
@@ -227,7 +227,7 @@ const Otziv = () => {
     setDeleteDialog({
       open: true,
       id: review.id,
-      name: review.name || "Беном"
+      name: review.name || "Без имени"
     });
   };
 
@@ -293,7 +293,7 @@ const Otziv = () => {
             className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-300 hover:scale-105"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Илова кардани видео-отзыв
+            Добавить видео-отзыв
           </Button>
         </div>
 
@@ -310,8 +310,8 @@ const Otziv = () => {
               <div className="p-6 rounded-2xl bg-muted/30 backdrop-blur-sm border border-border/40 mb-6">
                 <Play className="w-16 h-16 text-muted-foreground" />
               </div>
-              <h3 className="text-2xl font-semibold mb-3">Видео-отзывҳо пайдо нашуд</h3>
-              <p className="text-muted-foreground text-lg">Ягон видео-отзыв пайдо нашуд</p>
+              <h3 className="text-2xl font-semibold mb-3">Видео-отзывы не найдены</h3>
+              <p className="text-muted-foreground text-lg">Видео-отзывы не найдены</p>
             </div>
           </div>
         ) : (
@@ -403,48 +403,6 @@ const Otziv = () => {
                         {/* Информация об отзыве */}
                         <div className="absolute bottom-0 left-0 right-0 z-20 p-3">
                           <div className="text-white">
-                            {/* Имя с обрезкой и тултипом - теперь необязательное */}
-                              {/* {review.name && (
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <h3
-                                        className="font-semibold text-sm truncate max-w-[85%] cursor-pointer hover:underline"
-                                        onClick={(e) => openDetailDialog(review, e)}
-                                      >
-                                        {truncateText(review.name, 20)}
-                                      </h3>
-                                    </TooltipTrigger>
-                                    {needsTruncation(review.name, 20) && (
-                                      <TooltipContent>
-                                        <p>{review.name}</p>
-                                      </TooltipContent>
-                                    )}
-                                  </Tooltip>
-                                </TooltipProvider>
-                              )}
-
-
-                              {review.position && (
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <p
-                                        className="text-xs text-gray-200 truncate max-w-[85%] cursor-pointer hover:underline mt-1"
-                                        onClick={(e) => openDetailDialog(review, e)}
-                                      >
-                                        {truncateText(review.position, 25)}
-                                      </p>
-                                    </TooltipTrigger>
-                                    {needsTruncation(review.position, 25) && (
-                                      <TooltipContent>
-                                        <p>{review.position}</p>
-                                      </TooltipContent>
-                                    )}
-                                  </Tooltip>
-                                </TooltipProvider>
-                              )} */}
-
                             <div className="mt-2 flex items-center justify-between">
                               <RatingStars rating={review.rating || 5} />
                               <div className="flex items-center gap-1 text-xs text-gray-200">
@@ -452,19 +410,6 @@ const Otziv = () => {
                                 <span>{review.date}</span>
                               </div>
                             </div>
-
-                            {/* Кнопка для подробной информации */}
-                            {/* {(review.description || review.name || review.position) && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="w-full mt-2 text-xs bg-black/30 hover:bg-black/50 text-white h-6"
-                                onClick={(e) => openDetailDialog(review, e)}
-                              >
-                                <Info className="h-3 w-3 mr-1" />
-                                Муфассал
-                              </Button>
-                            )} */}
                           </div>
                         </div>
                       </div>
@@ -483,7 +428,7 @@ const Otziv = () => {
           <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-border/50 rounded-2xl">
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold">
-                {detailDialog.review?.name || "Беном"}
+                {detailDialog.review?.name || "Без имени"}
               </DialogTitle>
               <DialogDescription>
                 {detailDialog.review?.position || "Видео-отзыв"}
@@ -507,7 +452,7 @@ const Otziv = () => {
 
                 {detailDialog.review.description && (
                   <div className="bg-muted/30 rounded-lg p-4">
-                    <h4 className="font-medium text-sm mb-2">Тавсифи отзыв:</h4>
+                    <h4 className="font-medium text-sm mb-2">Описание отзыва:</h4>
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       {detailDialog.review.description}
                     </p>
@@ -531,7 +476,7 @@ const Otziv = () => {
                 className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200"
               >
                 <X className="w-4 h-4 mr-2" />
-                Пӯшидан
+                Закрыть
               </Button>
             </div>
           </DialogContent>
@@ -543,17 +488,17 @@ const Otziv = () => {
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Plus className="h-5 w-5 text-primary" />
-                Илова кардани видео-отзыв
+                Добавление видео-отзыва
               </DialogTitle>
               <DialogDescription>
-                Файли видеоро интихоб кунед. Ном ва дигар маълумотҳо ихтиёрӣ мебошанд.
+                Выберите видео файл. Имя и другая информация являются необязательными.
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddReview} className="space-y-6 py-2">
               {/* Поле загрузки видео */}
               <div className="space-y-3">
                 <Label htmlFor="videoFile" className="text-sm font-medium text-foreground/80">
-                  Файли видео *
+                  Видео файл *
                 </Label>
                 <div className="border-2 border-dashed border-border/40 rounded-xl p-6 text-center transition-all duration-200 hover:border-primary/40 hover:bg-primary/5">
                   <input
@@ -567,13 +512,13 @@ const Otziv = () => {
                     {uploading ? (
                       <div className="flex flex-col items-center">
                         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
-                        <p className="text-sm text-muted-foreground">Бор кардани видео...</p>
+                        <p className="text-sm text-muted-foreground">Загрузка видео...</p>
                       </div>
                     ) : newReview.videoBase64 ? (
                       <div className="flex flex-col items-center">
                         <Video className="h-8 w-8 text-green-500 mb-2" />
                         <p className="text-sm font-medium text-foreground">{newReview.videoFileName}</p>
-                        <p className="text-xs text-muted-foreground mt-1">Видео бомуваффақият бор карда шуд</p>
+                        <p className="text-xs text-muted-foreground mt-1">Видео успешно загружено</p>
                         <Button
                           type="button"
                           variant="outline"
@@ -581,16 +526,16 @@ const Otziv = () => {
                           className="mt-2"
                           onClick={() => setNewReview({ ...newReview, videoBase64: "", videoFileName: "" })}
                         >
-                          Интихоби дигар
+                          Выбрать другой
                         </Button>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center">
                         <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                        <p className="text-sm font-medium text-foreground">Файли видеоро интихоб кунед</p>
-                        <p className="text-xs text-muted-foreground mt-1">MP4, MOV, AVI (то 50MB)</p>
+                        <p className="text-sm font-medium text-foreground">Выберите видео файл</p>
+                        <p className="text-xs text-muted-foreground mt-1">MP4, MOV, AVI (до 50MB)</p>
                         <Button type="button" variant="outline" size="sm" className="mt-2">
-                          Бор кардани видео
+                          Загрузить видео
                         </Button>
                       </div>
                     )}
@@ -617,7 +562,7 @@ const Otziv = () => {
                   className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200"
                 >
                   <X className="w-4 h-4 mr-2" />
-                  Бекор кардан
+                  Отмена
                 </Button>
                 <Button
                   type="submit"
@@ -625,7 +570,7 @@ const Otziv = () => {
                   className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Илова кардан
+                  Добавить
                 </Button>
               </div>
             </form>
@@ -638,44 +583,44 @@ const Otziv = () => {
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Edit className="h-5 w-5 text-primary" />
-                Таҳрир кардани видео-отзыв
+                Редактирование видео-отзыва
               </DialogTitle>
               <DialogDescription>
-                Маълумоти видео-отзывро таҳрир кунед
+                Отредактируйте информацию о видео-отзыве
               </DialogDescription>
             </DialogHeader>
             {editingReview && (
               <form onSubmit={handleEditReview} className="space-y-6 py-2">
                 <div className="space-y-3">
                   <Label htmlFor="edit-name" className="text-sm font-medium text-foreground/80">
-                    Номи пациент
+                    Имя пациента
                   </Label>
                   <Input
                     id="edit-name"
                     value={editingReview.name || ''}
                     onChange={(e) => setEditingReview({ ...editingReview, name: e.target.value })}
                     className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                    placeholder="Номи ихтиёрӣ"
+                    placeholder="Имя (необязательно)"
                   />
                 </div>
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-position" className="text-sm font-medium text-foreground/80">
-                    Вазифа ё услуга
+                    Должность или услуга
                   </Label>
                   <Input
                     id="edit-position"
                     value={editingReview.position || ''}
                     onChange={(e) => setEditingReview({ ...editingReview, position: e.target.value })}
                     className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                    placeholder="Вазифа ё услуга"
+                    placeholder="Должность или услуга"
                   />
                 </div>
 
                 {/* Поле загрузки видео для редактирования */}
                 <div className="space-y-3">
                   <Label htmlFor="edit-videoFile" className="text-sm font-medium text-foreground/80">
-                    Файли видео *
+                    Видео файл *
                   </Label>
                   <div className="border-2 border-dashed border-border/40 rounded-xl p-6 text-center transition-all duration-200 hover:border-primary/40 hover:bg-primary/5">
                     <input
@@ -689,13 +634,13 @@ const Otziv = () => {
                       {uploading ? (
                         <div className="flex flex-col items-center">
                           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-2"></div>
-                          <p className="text-sm text-muted-foreground">Бор кардани видео...</p>
+                          <p className="text-sm text-muted-foreground">Загрузка видео...</p>
                         </div>
                       ) : editingReview.videoBase64 ? (
                         <div className="flex flex-col items-center">
                           <Video className="h-8 w-8 text-green-500 mb-2" />
                           <p className="text-sm font-medium text-foreground">{editingReview.videoFileName}</p>
-                          <p className="text-xs text-muted-foreground mt-1">Видео бомуваффақият бор карда шуд</p>
+                          <p className="text-xs text-muted-foreground mt-1">Видео успешно загружено</p>
                           <Button
                             type="button"
                             variant="outline"
@@ -703,16 +648,16 @@ const Otziv = () => {
                             className="mt-2"
                             onClick={() => setEditingReview({ ...editingReview, videoBase64: "", videoFileName: "" })}
                           >
-                            Интихоби дигар
+                            Выбрать другой
                           </Button>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center">
                           <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                          <p className="text-sm font-medium text-foreground">Файли видеоро интихоб кунед</p>
-                          <p className="text-xs text-muted-foreground mt-1">MP4, MOV, AVI (то 50MB)</p>
+                          <p className="text-sm font-medium text-foreground">Выберите видео файл</p>
+                          <p className="text-xs text-muted-foreground mt-1">MP4, MOV, AVI (до 50MB)</p>
                           <Button type="button" variant="outline" size="sm" className="mt-2">
-                            Бор кардани видео
+                            Загрузить видео
                           </Button>
                         </div>
                       )}
@@ -748,7 +693,7 @@ const Otziv = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-date" className="text-sm font-medium text-foreground/80">
-                    Сана
+                    Дата
                   </Label>
                   <Input
                     id="edit-date"
@@ -761,14 +706,14 @@ const Otziv = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-description" className="text-sm font-medium text-foreground/80">
-                    Тавсифи кӯтоҳ
+                    Краткое описание
                   </Label>
                   <Textarea
                     id="edit-description"
                     value={editingReview.description || ''}
                     onChange={(e) => setEditingReview({ ...editingReview, description: e.target.value })}
                     className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 min-h-[80px]"
-                    placeholder="Тавсифи кӯтоҳ дар бораи отзыв..."
+                    placeholder="Краткое описание отзыва..."
                   />
                 </div>
 
@@ -783,7 +728,7 @@ const Otziv = () => {
                     className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200"
                   >
                     <X className="w-4 h-4 mr-2" />
-                    Бекор кардан
+                    Отмена
                   </Button>
                   <Button
                     type="submit"
@@ -791,7 +736,7 @@ const Otziv = () => {
                     className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <Edit className="w-4 h-4 mr-2" />
-                    Таҳрир кардан
+                    Редактировать
                   </Button>
                 </div>
               </form>
@@ -805,22 +750,22 @@ const Otziv = () => {
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2 text-lg">
                 <Trash2 className="h-5 w-5 text-destructive" />
-                Видео-отзывро нест кардан?
+                Удалить видео-отзыв?
               </AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground">
-                Шумо боварӣ доред, ки мехоҳед видео-отзыви "{deleteDialog.name}"-ро нест кунед? Ин амал бозгашт надорад.
+                Вы уверены, что хотите удалить видео-отзыв "{deleteDialog.name}"? Это действие нельзя отменить.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200">
-                Бекор кардан
+                Отмена
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteReview}
                 className="rounded-xl bg-destructive/90 hover:bg-destructive backdrop-blur-sm border border-destructive/20 shadow-lg transition-all duration-200"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Нест кардан
+                Удалить
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

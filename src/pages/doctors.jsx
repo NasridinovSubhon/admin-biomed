@@ -130,17 +130,17 @@ const Doctors = () => {
     const file = event.target.files[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        toast.error("Лутфан фақат расм интихоб кунед");
+        toast.error("Пожалуйста, выберите только изображение");
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("Андозаи расм бояд аз 5MB хурдтар бошад");
+        toast.error("Размер изображения должен быть меньше 5MB");
         return;
       }
 
       try {
-        toast.loading("Расм бор карда мешавад...");
+        toast.loading("Изображение загружается...");
         const base64 = await convertToBase64(file);
 
         if (isEdit && editingDoctor) {
@@ -150,10 +150,10 @@ const Doctors = () => {
         }
 
         toast.dismiss();
-        toast.success("Расм бомуваффақият бор карда шуд");
+        toast.success("Изображение успешно загружено");
       } catch (error) {
         toast.dismiss();
-        toast.error("Хатоги дар бор кардани расм");
+        toast.error("Ошибка при загрузке изображения");
       }
     }
   };
@@ -163,7 +163,7 @@ const Doctors = () => {
     e.preventDefault();
 
     if (!newDoctor.name || !newDoctor.qualifications || !newDoctor.education || !newDoctor.specialty) {
-      toast.error("Лутфан ҳамаи майдонҳои зарурӣ пур кунед");
+      toast.error("Пожалуйста, заполните все обязательные поля");
       return;
     }
 
@@ -192,9 +192,9 @@ const Doctors = () => {
         });
       },
       {
-        loading: "Илова кардани доктор...",
-        success: "Доктор бомуваффақият илова шуд!",
-        error: "Хатоги дар илова кардани доктор"
+        loading: "Добавление врача...",
+        success: "Врач успешно добавлен!",
+        error: "Ошибка при добавлении врача"
       }
     );
   };
@@ -204,7 +204,7 @@ const Doctors = () => {
     e.preventDefault();
 
     if (!editingDoctor?.name || !editingDoctor?.qualifications || !editingDoctor?.education || !editingDoctor?.specialty) {
-      toast.error("Лутфан ҳамаи майдонҳои зарурӣ пур кунед");
+      toast.error("Пожалуйста, заполните все обязательные поля");
       return;
     }
 
@@ -226,9 +226,9 @@ const Doctors = () => {
         setEditingDoctor(null);
       },
       {
-        loading: "Таҳрир кардани доктор...",
-        success: "Доктор бомуваффақият таҳрир шуд!",
-        error: "Хатоги дар таҳрир кардани доктор"
+        loading: "Редактирование врача...",
+        success: "Врач успешно отредактирован!",
+        error: "Ошибка при редактировании врача"
       }
     );
   };
@@ -241,9 +241,9 @@ const Doctors = () => {
         setDeleteDialog({ open: false, id: null, name: "" });
       },
       {
-        loading: "Нест кардани доктор...",
-        success: "Доктор бомуваффақият нест шуд!",
-        error: "Хатоги дар нест кардани доктор"
+        loading: "Удаление врача...",
+        success: "Врач успешно удален!",
+        error: "Ошибка при удалении врача"
       }
     );
   };
@@ -317,8 +317,8 @@ const Doctors = () => {
         {/* Заголовок с кнопкой добавления */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight mb-2">Докторҳо</h1>
-            <p className="text-muted-foreground">Идоракунии рӯйхати докторҳои клиника</p>
+            <h1 className="text-3xl font-bold tracking-tight mb-2">Врачи</h1>
+            <p className="text-muted-foreground">Управление списком врачей клиники</p>
           </div>
           <Button
             onClick={() => setShowAddForm(true)}
@@ -326,14 +326,14 @@ const Doctors = () => {
             disabled={specialties.length === 0}
           >
             <Plus className="w-4 h-4 mr-2" />
-            Илова кардани доктор
+            Добавить врача
           </Button>
         </div>
 
         {specialties.length === 0 && !isLoading && (
           <div className="mb-6 p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
             <p className="text-yellow-800">
-              Ягон категория пайдо нашуд. Лутфан аввал категорияҳоро илова кунед, то ки докторҳо илова карда шаванд.
+              Категории не найдены. Пожалуйста, сначала добавьте категории, чтобы можно было добавлять врачей.
             </p>
           </div>
         )}
@@ -341,9 +341,9 @@ const Doctors = () => {
         {/* Таблица врачей */}
         <Card className="bg-background/60 backdrop-blur-sm border-border/40 rounded-xl">
           <CardHeader className="pb-3">
-            <CardTitle className="text-lg font-semibold">Рӯйхати докторҳо</CardTitle>
+            <CardTitle className="text-lg font-semibold">Список врачей</CardTitle>
             <CardDescription>
-              Ҳамаи докторҳои система - {dataDoctors.length} нафар
+              Все врачи системы - {dataDoctors.length} человек
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -353,19 +353,19 @@ const Doctors = () => {
               <div className="text-center py-12">
                 <div className="flex flex-col items-center justify-center">
                   <BriefcaseMedical className="w-16 h-16 text-muted-foreground mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Докторҳо пайдо нашуд</h3>
-                  <p className="text-muted-foreground">Ягон доктор ба система илова нашудааст</p>
+                  <h3 className="text-xl font-semibold mb-2">Врачи не найдены</h3>
+                  <p className="text-muted-foreground">В систему еще не добавлены врачи</p>
                 </div>
               </div>
             ) : (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Доктор</TableHead>
-                    <TableHead>Специализатсия</TableHead>
-                    <TableHead>Таҷриба</TableHead>
+                    <TableHead>Врач</TableHead>
+                    <TableHead>Специализация</TableHead>
+                    <TableHead>Опыт</TableHead>
                     <TableHead>Рейтинг</TableHead>
-                    <TableHead className="text-right">Амалҳо</TableHead>
+                    <TableHead className="text-right">Действия</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -380,7 +380,7 @@ const Doctors = () => {
                           />
                           <div>
                             <div className="font-medium">{doctor.name}</div>
-                            <div className="text-sm text-muted-foreground line-clamp-1 max-w-xs  ">
+                            <div className="text-sm text-muted-foreground line-clamp-1 max-w-xs">
                               {doctor.qualifications}
                             </div>
                           </div>
@@ -394,7 +394,7 @@ const Doctors = () => {
                       <TableCell>
                         <div className="flex items-center gap-1">
                           <BriefcaseMedical className="w-3 h-3 text-muted-foreground" />
-                          <span>{doctor.experience} сол</span>
+                          <span>{doctor.experience} лет</span>
                         </div>
                       </TableCell>
                       <TableCell>
@@ -437,17 +437,17 @@ const Doctors = () => {
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Plus className="h-5 w-5 text-primary" />
-                Илова кардани доктори нав
+                Добавление нового врача
               </DialogTitle>
               <DialogDescription>
-                Маълумоти доктори навро ворид кунед
+                Введите информацию о новом враче
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddDoctor} className="space-y-6 py-2">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <Label htmlFor="name" className="text-sm font-medium">
-                    Номи доктор *
+                    Имя врача *
                   </Label>
                   <Input
                     id="name"
@@ -461,14 +461,14 @@ const Doctors = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="specialty" className="text-sm font-medium">
-                    Специализатсия *
+                    Специализация *
                   </Label>
                   <Select
                     value={newDoctor.specialty}
                     onValueChange={(value) => setNewDoctor({ ...newDoctor, specialty: value })}
                   >
                     <SelectTrigger className="rounded-lg">
-                      <SelectValue placeholder="Специализатсияро интихоб кунед" />
+                      <SelectValue placeholder="Выберите специализацию" />
                     </SelectTrigger>
                     <SelectContent>
                       {specialties.map((specialty) => (
@@ -483,7 +483,7 @@ const Doctors = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="qualifications" className="text-sm font-medium">
-                  дар бораи духтур
+                  О враче
                 </Label>
                 <Textarea
                   id="professional_activity"
@@ -492,14 +492,12 @@ const Doctors = () => {
                   placeholder="Проведение операций на сосудах, ангиографии..."
                   className="rounded-lg min-h-[80px]"
                 />
-
               </div>
 
               <div className="space-y-3">
                 <Label htmlFor="education" className="text-sm font-medium">
-                  Маълумот *
+                  Образование *
                 </Label>
-
                 <Textarea
                   id="education"
                   required
@@ -512,7 +510,7 @@ const Doctors = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="professional_activity" className="text-sm font-medium">
-                  фаолияташ
+                  Квалификация
                 </Label>
                 <Input
                   id="qualifications"
@@ -527,7 +525,7 @@ const Doctors = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <Label htmlFor="experience" className="text-sm font-medium">
-                    Таҷриба (сол) *
+                    Опыт (лет) *
                   </Label>
                   <Input
                     id="experience"
@@ -585,7 +583,7 @@ const Doctors = () => {
                           onChange={(e) => handleScheduleChange(day, 'end', e.target.value)}
                           className="w-16 rounded-lg text-center"
                         />
-                        <span className="text-xs text-muted-foreground">соат</span>
+                        <span className="text-xs text-muted-foreground">часов</span>
                       </div>
                     </div>
                   ))}
@@ -595,7 +593,7 @@ const Doctors = () => {
               {/* Изображение */}
               <div className="space-y-3">
                 <Label className="text-sm font-medium">
-                  Тасвири доктор
+                  Фотография врача
                 </Label>
 
                 <div className="flex justify-center mb-3">
@@ -611,7 +609,7 @@ const Doctors = () => {
                 <div className="space-y-2">
                   <Label htmlFor="file-upload" className="flex items-center gap-2 cursor-pointer">
                     <Upload className="h-4 w-4" />
-                    Бор кардани расм
+                    Загрузить изображение
                   </Label>
                   <Input
                     id="file-upload"
@@ -621,7 +619,7 @@ const Doctors = () => {
                     className="hidden"
                   />
                   <p className="text-xs text-muted-foreground">
-                    Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB
+                    Разрешенные форматы: JPG, PNG, GIF. Максимальный размер: 5MB
                   </p>
                 </div>
               </div>
@@ -634,7 +632,7 @@ const Doctors = () => {
                   className="rounded-lg"
                 >
                   <X className="w-4 h-4 mr-2" />
-                  Бекор кардан
+                  Отмена
                 </Button>
                 <Button
                   type="submit"
@@ -642,7 +640,7 @@ const Doctors = () => {
                   disabled={!newDoctor.specialty}
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Илова кардан
+                  Добавить
                 </Button>
               </div>
             </form>
@@ -655,10 +653,10 @@ const Doctors = () => {
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Edit className="h-5 w-5 text-primary" />
-                Таҳрир кардани доктор
+                Редактирование врача
               </DialogTitle>
               <DialogDescription>
-                Маълумоти докторро таҳрир кунед
+                Отредактируйте информацию о враче
               </DialogDescription>
             </DialogHeader>
             {editingDoctor && (
@@ -666,7 +664,7 @@ const Doctors = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
                     <Label htmlFor="edit-name" className="text-sm font-medium">
-                      Номи доктор *
+                      Имя врача *
                     </Label>
                     <Input
                       id="edit-name"
@@ -679,7 +677,7 @@ const Doctors = () => {
 
                   <div className="space-y-3">
                     <Label htmlFor="edit-specialty" className="text-sm font-medium">
-                      Специализатсия *
+                      Специализация *
                     </Label>
                     <Select
                       value={editingDoctor.specialty}
@@ -701,7 +699,7 @@ const Doctors = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-qualifications" className="text-sm font-medium">
-                    Квалификатсия *
+                    Квалификация *
                   </Label>
                   <Input
                     id="edit-qualifications"
@@ -714,7 +712,7 @@ const Doctors = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-education" className="text-sm font-medium">
-                    Маълумот *
+                    Образование *
                   </Label>
                   <Textarea
                     id="edit-education"
@@ -727,7 +725,7 @@ const Doctors = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-professional_activity" className="text-sm font-medium">
-                    Фаъолияти касбӣ
+                    Профессиональная деятельность
                   </Label>
                   <Textarea
                     id="edit-professional_activity"
@@ -740,7 +738,7 @@ const Doctors = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
                     <Label htmlFor="edit-experience" className="text-sm font-medium">
-                      Таҷриба (сол) *
+                      Опыт (лет) *
                     </Label>
                     <Input
                       id="edit-experience"
@@ -798,7 +796,7 @@ const Doctors = () => {
                             onChange={(e) => handleScheduleChange(day, 'end', e.target.value, true)}
                             className="w-16 rounded-lg text-center"
                           />
-                          <span className="text-xs text-muted-foreground">соат</span>
+                          <span className="text-xs text-muted-foreground">часов</span>
                         </div>
                       </div>
                     ))}
@@ -808,7 +806,7 @@ const Doctors = () => {
                 {/* Изображение */}
                 <div className="space-y-3">
                   <Label className="text-sm font-medium">
-                    Тасвири доктор
+                    Фотография врача
                   </Label>
 
                   <div className="flex justify-center mb-3">
@@ -824,7 +822,7 @@ const Doctors = () => {
                   <div className="space-y-2">
                     <Label htmlFor="edit-file-upload" className="flex items-center gap-2 cursor-pointer">
                       <Upload className="h-4 w-4" />
-                      Бор кардани расм аз компютер
+                      Загрузить изображение с компьютера
                     </Label>
                     <Input
                       id="edit-file-upload"
@@ -834,7 +832,7 @@ const Doctors = () => {
                       className="hidden"
                     />
                     <p className="text-xs text-muted-foreground">
-                      Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB
+                      Разрешенные форматы: JPG, PNG, GIF. Максимальный размер: 5MB
                     </p>
                   </div>
                 </div>
@@ -850,14 +848,14 @@ const Doctors = () => {
                     className="rounded-lg"
                   >
                     <X className="w-4 h-4 mr-2" />
-                    Бекор кардан
+                    Отмена
                   </Button>
                   <Button
                     type="submit"
                     className="rounded-lg bg-primary hover:bg-primary/90"
                   >
                     <Edit className="w-4 h-4 mr-2" />
-                    Таҳрир кардан
+                    Редактировать
                   </Button>
                 </div>
               </form>
@@ -871,22 +869,22 @@ const Doctors = () => {
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2 text-lg">
                 <Trash2 className="h-5 w-5 text-destructive" />
-                Докторро нест кардан?
+                Удалить врача?
               </AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground">
-                Шумо боварӣ доред, ки мехоҳед доктори "{deleteDialog.name}"-ро нест кунед? Ин амал бозгашт надорад.
+                Вы уверены, что хотите удалить врача "{deleteDialog.name}"? Это действие нельзя отменить.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel className="rounded-lg">
-                Бекор кардан
+                Отмена
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteDoctor}
                 className="rounded-lg bg-destructive hover:bg-destructive/90"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Нест кардан
+                Удалить
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

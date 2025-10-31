@@ -40,7 +40,7 @@ function PhoneNumberOTP({ value, onChange, className }) {
   return (
     <div className={`space-y-2 ${className}`}>
       <Label htmlFor="phone-otp" className="text-sm font-medium text-foreground/80">
-        Рақами телефон *
+        Номер телефона *
       </Label>
       <div className="flex flex-col space-y-3">
         <InputOTP
@@ -137,24 +137,23 @@ const TableComponent = () => {
     return conflicts.length > 0 ? conflicts : null;
   };
 
-
   const generateAvailableTimes = (doctorId, date) => {
     if (!doctorId || !date) return [];
 
-    const workingHours = { start: 8, end: 18 }; // 8:00 то 18:00
-    const appointmentDuration = 30; // 30 дақиқа
+    const workingHours = { start: 8, end: 18 }; // 8:00 до 18:00
+    const appointmentDuration = 30; // 30 минут
     const availableSlots = [];
 
     const today = new Date();
     const selectedDate = new Date(date);
     const isToday = selectedDate.toDateString() === today.toDateString();
 
-    // Ҳамаи қайдҳои духтур дар санаи интихобшуда
+    // Все записи врача в выбранной дате
     const existingAppointments = dataZapis.filter(
       record => record.doctor.toString() === doctorId.toString() && record.date === date
     );
 
-    // Занятые слотҳо
+    // Занятые слоты
     const bookedSlots = new Set();
     existingAppointments.forEach(appointment => {
       const time = appointment.time;
@@ -173,7 +172,7 @@ const TableComponent = () => {
       for (let minute = 0; minute < 60; minute += appointmentDuration) {
         const timeString = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
 
-        // Агар ин рӯзи имрӯз бошад — вақт набояд аз "ҳоло + 30 дақиқа" барвақт бошад
+        // Если это сегодняшний день - время не должно быть раньше "сейчас + 30 минут"
         if (isToday) {
           const nowPlus30 = new Date(today.getTime() + appointmentDuration * 60000);
           const currentSlot = new Date(`2000-01-01T${timeString}`);
@@ -181,7 +180,7 @@ const TableComponent = () => {
           if (currentSlot < nowSlot) continue; // Пропускаем слишком ранние
         }
 
-        // Агар вақт холӣ бошад
+        // Если время свободно
         if (!bookedSlots.has(timeString)) {
           availableSlots.push({
             time: timeString,
@@ -196,10 +195,9 @@ const TableComponent = () => {
       }
     }
 
-    // Филтр мекунем, то танҳо "озод"-ҳоро нишон диҳем
+    // Фильтруем, чтобы показать только "свободные"
     return availableSlots.filter(slot => slot.status === "free").map(slot => slot.time);
   };
-
 
   const handleDoctorOrDateChange = (field, value) => {
     setNewUser(prev => {
@@ -282,7 +280,6 @@ const TableComponent = () => {
       }
     }
 
-
     toast.promise(
       async () => {
         await postZapis(newUser);
@@ -302,18 +299,18 @@ const TableComponent = () => {
       {
         loading: (
           <div className="flex items-center gap-2">
-            Илова кардани қайд...
+            Добавление записи...
           </div>
         ),
         success: (
           <div className="flex items-center gap-2">
-            Қайд бомуваффақият илова шуд!
+            Запись успешно добавлена!
           </div>
         ),
         error: (
           <div className="flex items-center gap-2">
             <CircleCheckBig className="h-4 w-4 text-red-500" />
-            Хатоги дар илова кардани қайд
+            Ошибка при добавлении записи
           </div>
         )
       }
@@ -321,7 +318,7 @@ const TableComponent = () => {
   };
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Муайян нашудааст";
+    if (!dateString) return "Не указано";
     try {
       return new Date(dateString).toLocaleDateString('ru-RU');
     } catch {
@@ -331,7 +328,7 @@ const TableComponent = () => {
 
   const getDoctorName = (doctorId) => {
     const doctor = dataDoctors.find(d => d.id === parseInt(doctorId));
-    return doctor ? doctor.name : `Духтур #${doctorId}`;
+    return doctor ? doctor.name : `Врач #${doctorId}`;
   };
 
   // Функция для проверки, остался ли 1 час до приема
@@ -391,19 +388,19 @@ const TableComponent = () => {
             loading: (
               <div className="flex items-center gap-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
-                Қайдҳо нест карда мешаванд...
+                Записи удаляются...
               </div>
             ),
             success: (
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="h-4 w-4 text-green-500" />
-                Қайдҳо бомуваффақият нест шуданд!
+                Записи успешно удалены!
               </div>
             ),
             error: (
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="h-4 w-4 text-red-500" />
-                Хатоги дар нест кардани қайдҳо
+                Ошибка при удалении записей
               </div>
             )
           }
@@ -417,19 +414,18 @@ const TableComponent = () => {
           {
             loading: (
               <div className="flex items-center gap-2">
-                Қайд нест карда мешавад...
+                Запись удаляется...
               </div>
             ),
             success: (
               <div className="flex items-center gap-2">
-
-                Қайд бомуваффақият нест шуд!
+                Запись успешно удалена!
               </div>
             ),
             error: (
               <div className="flex items-center gap-2">
                 <CircleCheckBig className="h-4 w-4 text-red-500" />
-                Хатоги дар нест кардани қайд
+                Ошибка при удалении записи
               </div>
             )
           }
@@ -517,7 +513,7 @@ const TableComponent = () => {
                 className="rounded-xl bg-red-500/90 hover:bg-red-600 backdrop-blur-sm border border-red-300/50 dark:border-red-700/50"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Ҳамаро нест кунед
+                Удалить все
               </Button>
             )}
           </div>
@@ -528,13 +524,13 @@ const TableComponent = () => {
               <TableHeader className="bg-background/50 backdrop-blur-sm">
                 <TableRow className="border-border/50 hover:bg-transparent">
                   <TableHead className="w-[80px] font-medium text-foreground/80">ID</TableHead>
-                  <TableHead className="font-medium text-foreground/80">Номи пурра</TableHead>
-                  <TableHead className="font-medium text-foreground/80">Хизматрасонӣ</TableHead>
-                  <TableHead className="font-medium text-foreground/80">Духтур</TableHead>
-                  <TableHead className="font-medium text-foreground/80">Сана</TableHead>
-                  <TableHead className="font-medium text-foreground/80">Вақт</TableHead>
-                  <TableHead className="font-medium text-foreground/80">Рақам</TableHead>
-                  <TableHead className="w-[100px] font-medium text-foreground/80">Амалҳо</TableHead>
+                  <TableHead className="font-medium text-foreground/80">Полное имя</TableHead>
+                  <TableHead className="font-medium text-foreground/80">Услуга</TableHead>
+                  <TableHead className="font-medium text-foreground/80">Врач</TableHead>
+                  <TableHead className="font-medium text-foreground/80">Дата</TableHead>
+                  <TableHead className="font-medium text-foreground/80">Время</TableHead>
+                  <TableHead className="font-medium text-foreground/80">Номер</TableHead>
+                  <TableHead className="w-[100px] font-medium text-foreground/80">Действия</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -551,8 +547,8 @@ const TableComponent = () => {
                         <div className="p-3 rounded-2xl bg-muted/50 mb-3 backdrop-blur-sm">
                           <User className="w-8 h-8 text-muted-foreground" />
                         </div>
-                        <p className="text-lg font-medium mb-1">Қайдҳо барои намоиш нестанд</p>
-                        <p className="text-sm text-muted-foreground">Ягон қайд пайдо нашуд</p>
+                        <p className="text-lg font-medium mb-1">Нет записей для отображения</p>
+                        <p className="text-sm text-muted-foreground">Записи не найдены</p>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -581,7 +577,6 @@ const TableComponent = () => {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          
                           {getDoctorName(record.doctor)}
                         </div>
                       </TableCell>
@@ -599,7 +594,7 @@ const TableComponent = () => {
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Phone className="h-3 w-3 text-muted-foreground" />
-                          {record.phoneNumber || "Муайян нашудааст"}
+                          {record.phoneNumber || "Не указано"}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -624,7 +619,7 @@ const TableComponent = () => {
   };
 
   return (
-    <div className="min-h-screen  from-background  to-muted/20 p-6">
+    <div className="min-h-screen from-background to-muted/20 p-6">
       <div className="max-w-7xl mx-auto space-y-8">
         {isLoading ? (
           <HeaderSkeleton />
@@ -632,17 +627,16 @@ const TableComponent = () => {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-                Панели администратор
+                Панель администратора
               </h1>
-
-              <p className="text-muted-foreground mt-3 text-lg">Идоракунии ҳамаи қайдҳои беморон</p>
+              <p className="text-muted-foreground mt-3 text-lg">Управление всеми записями пациентов</p>
             </div>
             <Button
               onClick={() => setShowAddForm(true)}
               className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-300 hover:scale-105"
             >
               <Plus className="w-4 h-4 mr-2" />
-              Илова кардани қайд
+              Добавить запись
             </Button>
           </div>
         )}
@@ -689,8 +683,7 @@ const TableComponent = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Қайдҳои фаъол</p>
-
+                    <p className="text-sm font-medium text-muted-foreground">Активные записи</p>
                     <p className="text-3xl font-bold mt-2">{activeRecords.length}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-green-500/10">
@@ -704,7 +697,7 @@ const TableComponent = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Қайдҳои наздик</p>
+                    <p className="text-sm font-medium text-muted-foreground">Ближайшие записи</p>
                     <p className="text-3xl font-bold mt-2">{oneHourLeftRecords.length}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-amber-500/10">
@@ -718,7 +711,7 @@ const TableComponent = () => {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">Қайдҳои ба охир расида</p>
+                    <p className="text-sm font-medium text-muted-foreground">Истекшие записи</p>
                     <p className="text-3xl font-bold mt-2">{expiredRecords.length}</p>
                   </div>
                   <div className="p-3 rounded-xl bg-red-500/10">
@@ -733,24 +726,24 @@ const TableComponent = () => {
         {/* Таблицы */}
         {renderTable(
           oneHourLeftRecords,
-          "Қайдҳои бо вақти монда",
-          "Қайдҳое, ки то 1 соат вақт доранд",
+          "Записи с оставшимся временем",
+          "Записи, до которых осталось менее 1 часа",
           "warning",
           <Clock className="h-5 w-5 text-amber-600" />
         )}
 
         {renderTable(
           expiredRecords,
-          "Қайдҳои ба охир расида",
-          "Қайдҳое, ки вақташон ба охир расидааст",
+          "Истекшие записи",
+          "Записи, время которых уже прошло",
           "destructive",
           <AlertTriangle className="h-5 w-5 text-red-600" />
         )}
 
         {renderTable(
           activeRecords,
-          "Қайдҳои фаъол",
-          "Қайдҳои омадаи оянда",
+          "Активные записи",
+          "Предстоящие записи",
           "default",
           <CheckCircle className="h-5 w-5 text-blue-600" />
         )}
@@ -775,27 +768,27 @@ const TableComponent = () => {
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Plus className="h-5 w-5 text-primary" />
-                Илова кардани қайди нав
+                Добавление новой записи
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleAddUser} className="space-y-6 py-2">
               <div className="space-y-3">
                 <Label htmlFor="fullName" className="text-sm font-medium text-foreground/80">
-                  Номи пурра *
+                  Полное имя *
                 </Label>
                 <Input
                   id="fullName"
                   required
                   value={newUser.fullName}
                   onChange={(e) => setNewUser({ ...newUser, fullName: e.target.value })}
-                  placeholder="Номи пурраи беморро ворид кунед"
+                  placeholder="Введите полное имя пациента"
                   className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                 />
               </div>
 
               <div className="space-y-3">
                 <Label htmlFor="service" className="text-sm font-medium text-foreground/80">
-                  Хизматрасонӣ *
+                  Услуга *
                 </Label>
                 <Select
                   required
@@ -803,7 +796,7 @@ const TableComponent = () => {
                   onValueChange={handleServiceChange}
                 >
                   <SelectTrigger className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20">
-                    <SelectValue placeholder="Хизматрасониро интихоб кунед" />
+                    <SelectValue placeholder="Выберите услугу" />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl bg-background/95 backdrop-blur-xl border-border/50">
                     {dataCateg.map((category) => (
@@ -821,7 +814,7 @@ const TableComponent = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="doctor" className="text-sm font-medium text-foreground/80">
-                  Духтур *
+                  Врач *
                 </Label>
                 <Select
                   required
@@ -832,10 +825,10 @@ const TableComponent = () => {
                   <SelectTrigger className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20">
                     <SelectValue placeholder={
                       !newUser.service
-                        ? "Аввал хизматрасониро интихоб кунед"
+                        ? "Сначала выберите услугу"
                         : filteredDoctors.length === 0
-                          ? "Барои ин хизмат духтур нест"
-                          : "Духтурро интихоб кунед"
+                          ? "Для этой услуги нет врачей"
+                          : "Выберите врача"
                     } />
                   </SelectTrigger>
                   <SelectContent className="rounded-xl bg-background/95 backdrop-blur-xl border-border/50">
@@ -847,7 +840,6 @@ const TableComponent = () => {
                       >
                         <div className="flex flex-col">
                           <span className="font-medium">{doctor.name}</span>
-
                         </div>
                       </SelectItem>
                     ))}
@@ -856,7 +848,7 @@ const TableComponent = () => {
                 {newUser.service && filteredDoctors.length === 0 && (
                   <p className="text-sm text-muted-foreground mt-2 flex items-center gap-2">
                     <AlertTriangle className="h-4 w-4" />
-                    Барои ин хизматрасонӣ духтурҳо дастрас нестанд
+                    Для этой услуги врачи недоступны
                   </p>
                 )}
               </div>
@@ -864,7 +856,7 @@ const TableComponent = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <Label htmlFor="date" className="text-sm font-medium text-foreground/80">
-                    Сана *
+                    Дата *
                   </Label>
                   <Input
                     id="date"
@@ -874,13 +866,13 @@ const TableComponent = () => {
                     onChange={(e) => handleDoctorOrDateChange('date', e.target.value)}
                     min={new Date().toISOString().split('T')[0]}
                     disabled={!newUser.doctor}
-                    className="rounded-xl   bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                    className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
                   />
                 </div>
 
                 <div className="space-y-3">
                   <Label htmlFor="time" className="text-sm font-medium text-foreground/80">
-                    Вақт *
+                    Время *
                   </Label>
                   <Select
                     required
@@ -888,13 +880,13 @@ const TableComponent = () => {
                     onValueChange={handleTimeChange}
                     disabled={!newUser.doctor || !newUser.date || availableTimes.length === 0}
                   >
-                    <SelectTrigger className="rounded-xl  bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20">
+                    <SelectTrigger className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20">
                       <SelectValue placeholder={
                         !newUser.doctor || !newUser.date
-                          ? "Аввал духтур "
+                          ? "Сначала выберите врача и дату"
                           : availableTimes.length === 0
-                            ? "Вақтҳои дастрас нестанд"
-                            : "Вақтро интихоб кунед"
+                            ? "Доступное время отсутствует"
+                            : "Выберите время"
                       } />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl bg-background/95 backdrop-blur-xl border-border/50">
@@ -917,8 +909,8 @@ const TableComponent = () => {
                   <div className="flex items-start gap-3">
                     <AlertTriangle className="w-5 h-5 text-destructive mt-0.5 flex-shrink-0" />
                     <div className="text-sm text-destructive">
-                      <p className="font-medium">Ин вақт барои ин духтур банд аст.</p>
-                      <p className="mt-2">Қайдҳои мавҷуда:</p>
+                      <p className="font-medium">Это время занято для данного врача.</p>
+                      <p className="mt-2">Существующие записи:</p>
                       <ul className="mt-2 space-y-1">
                         {timeConflict.map((conflict, index) => (
                           <li key={index} className="flex items-center gap-2">
@@ -957,14 +949,14 @@ const TableComponent = () => {
                   }}
                   className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200"
                 >
-                  Бекор кардан
+                  Отмена
                 </Button>
                 <Button
                   type="submit"
                   disabled={!!timeConflict || !newUser.time || !newUser.phoneNumber || newUser.phoneNumber.length < 9}
                   className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Илова кардани қайд
+                  Добавить запись
                 </Button>
               </div>
             </form>
@@ -977,23 +969,23 @@ const TableComponent = () => {
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2 text-lg">
                 <Trash2 className="h-5 w-5 text-destructive" />
-                {deleteDialog.type === "all" ? "Ҳамаи қайдҳои ба охир расидаро нест кардан?" : "Қайдро нест кардан?"}
+                {deleteDialog.type === "all" ? "Удалить все истекшие записи?" : "Удалить запись?"}
               </AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground">
                 {deleteDialog.type === "all"
-                  ? `Шумо боварӣ доред, ки мехоҳед ҳамаи ${expiredRecords.length} қайдҳои ба охир расидаро нест кунед? Ин амал бозгашт надорад.`
-                  : "Шумо боварӣ доред, ки мехоҳед ин қайдро нест кунед? Ин амал бозгашт надорад."}
+                  ? `Вы уверены, что хотите удалить все ${expiredRecords.length} истекшие записи? Это действие нельзя отменить.`
+                  : "Вы уверены, что хотите удалить эту запись? Это действие нельзя отменить."}
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200">
-                Бекор кардан
+                Отмена
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={confirmDelete}
                 className="rounded-xl bg-destructive/90 hover:bg-destructive backdrop-blur-sm border border-destructive/20 shadow-lg transition-all duration-200"
               >
-                Нест кардан
+                Удалить
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

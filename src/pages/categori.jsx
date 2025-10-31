@@ -86,18 +86,18 @@ const Categori = () => {
     if (file) {
       // Проверка типа файла
       if (!file.type.startsWith('image/')) {
-        toast.error("Лутфан фақат расм интихоб кунед");
+        toast.error("Пожалуйста, выберите только изображение");
         return;
       }
 
       // Проверка размера файла (максимум 5MB)
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("Андозаи расм бояд аз 5MB хурдтар бошад");
+        toast.error("Размер изображения должен быть меньше 5MB");
         return;
       }
 
       try {
-        toast.loading("Расм бор карда мешавад...");
+        toast.loading("Изображение загружается...");
         const base64 = await convertToBase64(file);
 
         if (isEdit && editingCategory) {
@@ -107,10 +107,10 @@ const Categori = () => {
         }
 
         toast.dismiss();
-        toast.success("Расм бомуваффақият бор карда шуд");
+        toast.success("Изображение успешно загружено");
       } catch (error) {
         toast.dismiss();
-        toast.error("Хатоги дар бор кардани расм");
+        toast.error("Ошибка при загрузке изображения");
       }
     }
   };
@@ -120,7 +120,7 @@ const Categori = () => {
     e.preventDefault();
 
     if (!newCategory.sohaiKlinik || !newCategory.descKlinik) {
-      toast.error("Лутфан ҳамаи майдонҳоро пур кунед");
+      toast.error("Пожалуйста, заполните все поля");
       return;
     }
 
@@ -135,9 +135,9 @@ const Categori = () => {
         });
       },
       {
-        loading: "Илова кардани категория...",
-        success: "Категория бомуваффақият илова шуд!",
-        error: "Хатоги дар илова кардани категория"
+        loading: "Добавление категории...",
+        success: "Категория успешно добавлена!",
+        error: "Ошибка при добавлении категории"
       }
     );
   };
@@ -147,7 +147,7 @@ const Categori = () => {
     e.preventDefault();
 
     if (!editingCategory?.sohaiKlinik || !editingCategory?.descKlinik) {
-      toast.error("Лутфан ҳамаи майдонҳоро пур кунед");
+      toast.error("Пожалуйста, заполните все поля");
       return;
     }
 
@@ -162,9 +162,9 @@ const Categori = () => {
         setEditingCategory(null);
       },
       {
-        loading: "Таҳрир кардани категория...",
-        success: "Категория бомуваффақият таҳрир шуд!",
-        error: "Хатоги дар таҳрир кардани категория"
+        loading: "Редактирование категории...",
+        success: "Категория успешно отредактирована!",
+        error: "Ошибка при редактировании категории"
       }
     );
   };
@@ -177,9 +177,9 @@ const Categori = () => {
         setDeleteDialog({ open: false, id: null, title: "" });
       },
       {
-        loading: "Нест кардани категория...",
-        success: "Категория бомуваффақият нест шуд!",
-        error: "Хатоги дар нест кардани категория"
+        loading: "Удаление категории...",
+        success: "Категория успешно удалена!",
+        error: "Ошибка при удалении категории"
       }
     );
   };
@@ -224,7 +224,7 @@ const Categori = () => {
 
         <div className="text-center mb-16 flex items-center justify-between">
           <h1 className="text-3xl font-bold tracking-tight mb-2">
-            Хизматрасониҳо
+            Услуги
           </h1>
 
 
@@ -234,7 +234,7 @@ const Categori = () => {
             className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-300 hover:scale-105"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Илова кардани категория
+            Добавить категорию
           </Button>
         </div>
 
@@ -251,8 +251,8 @@ const Categori = () => {
               <div className="p-6 rounded-2xl bg-muted/30 backdrop-blur-sm border border-border/40 mb-6">
                 <Stethoscope className="w-16 h-16 text-muted-foreground" />
               </div>
-              <h3 className="text-2xl font-semibold mb-3">Хизматрасониҳо дастрас нестанд</h3>
-              <p className="text-muted-foreground text-lg">Ягон хизматрасонӣ пайдо нашуд</p>
+              <h3 className="text-2xl font-semibold mb-3">Услуги недоступны</h3>
+              <p className="text-muted-foreground text-lg">Услуги не найдены</p>
             </div>
           </div>
         ) : (
@@ -339,16 +339,16 @@ const Categori = () => {
             <DialogHeader className="border-b border-border/30 ">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Plus className="h-5 w-5 text-primary" />
-                Илова кардани категорияи навро
+                Добавление новой категории
               </DialogTitle>
               <DialogDescription>
-                Маълумоти категорияи навро ворид кунед
+                Введите информацию о новой категории
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddCategory} className="space-y-6 py-2">
               <div className="space-y-3">
                 <Label htmlFor="sohaiKlinik" className="text-sm font-medium text-foreground/80">
-                  Номи хизматрасонӣ *
+                  Название услуги *
                 </Label>
                 <Input
                   id="sohaiKlinik"
@@ -362,7 +362,7 @@ const Categori = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="descKlinik" className="text-sm font-medium text-foreground/80">
-                  Тавсифи хизматрасонӣ *
+                  Описание услуги *
                 </Label>
                 <Textarea
                   id="descKlinik"
@@ -376,7 +376,7 @@ const Categori = () => {
 
               <div className="space-y-3">
                 <Label className="text-sm font-medium text-foreground/80">
-                  Тасвир
+                  Изображение
                 </Label>
 
                 {/* Предпросмотр изображения */}
@@ -394,7 +394,7 @@ const Categori = () => {
                 <div className="space-y-2">
                   <Label htmlFor="file-upload" className="flex items-center justify-center gap-2 cursor-pointer ">
                     <Upload className="h-5 w-5" />
-                    Бор кардани расм аз компютер
+                    Загрузить изображение с компьютера
                   </Label>
                   <Input
                     id="file-upload"
@@ -404,7 +404,7 @@ const Categori = () => {
                     className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 hidden"
                   />
                   <p className="text-xs text-muted-foreground">
-                    {/* Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB */}
+                    {/* Разрешенные форматы: JPG, PNG, GIF. Максимальный размер: 5MB */}
                   </p>
                 </div>
 
@@ -427,14 +427,14 @@ const Categori = () => {
                   className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200"
                 >
                   <X className="w-4 h-4 mr-2" />
-                  Бекор кардан
+                  Отмена
                 </Button>
                 <Button
                   type="submit"
                   className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-200"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Илова кардан
+                  Добавить
                 </Button>
               </div>
             </form>
@@ -447,17 +447,17 @@ const Categori = () => {
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Edit className="h-5 w-5 text-primary" />
-                Таҳрир кардани категория
+                Редактирование категории
               </DialogTitle>
               <DialogDescription>
-                Маълумоти категорияро таҳрир кунед
+                Отредактируйте информацию о категории
               </DialogDescription>
             </DialogHeader>
             {editingCategory && (
               <form onSubmit={handleEditCategory} className="space-y-6 py-2 overflow-y-auto">
                 <div className="space-y-3">
                   <Label htmlFor="edit-sohaiKlinik" className="text-sm font-medium text-foreground/80">
-                    Номи хизматрасонӣ *
+                    Название услуги *
                   </Label>
                   <Input
                     id="edit-sohaiKlinik"
@@ -470,7 +470,7 @@ const Categori = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-descKlinik" className="text-sm font-medium text-foreground/80">
-                    Тавсифи хизматрасонӣ *
+                    Описание услуги *
                   </Label>
                   <Textarea
                     id="edit-descKlinik"
@@ -483,7 +483,7 @@ const Categori = () => {
 
                 <div className="space-y-3">
                   <Label className="text-sm font-medium text-foreground/80">
-                    Тасвир
+                    Изображение
                   </Label>
 
                   {/* Предпросмотр изображения */}
@@ -501,7 +501,7 @@ const Categori = () => {
                   <div className="space-y-2">
                     <Label htmlFor="edit-file-upload" className="flex items-center gap-2 cursor-pointer">
                       <Upload className="h-4 w-4" />
-                      Бор кардани расм аз компютер
+                      Загрузить изображение с компьютера
                     </Label>
                     <Input
                       id="edit-file-upload"
@@ -511,7 +511,7 @@ const Categori = () => {
                       className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 hidden"
                     />
                     <p className="text-xs text-muted-foreground">
-                      {/* Форматҳои иҷозатдодашуда: JPG, PNG, GIF. Андозаи максималӣ: 5MB */}
+                      {/* Разрешенные форматы: JPG, PNG, GIF. Максимальный размер: 5MB */}
                     </p>
                   </div>
 
@@ -530,14 +530,14 @@ const Categori = () => {
                     className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200"
                   >
                     <X className="w-4 h-4 mr-2" />
-                    Бекор кардан
+                    Отмена
                   </Button>
                   <Button
                     type="submit"
                     className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-200"
                   >
                     <Edit className="w-4 h-4 mr-2" />
-                    Таҳрир кардан
+                    Редактировать
                   </Button>
                 </div>
               </form>
@@ -551,22 +551,22 @@ const Categori = () => {
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2 text-lg">
                 <Trash2 className="h-5 w-5 text-destructive" />
-                Категорияро нест кардан?
+                Удалить категорию?
               </AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground">
-                Шумо боварӣ доред, ки мехоҳед категорияи "{deleteDialog.title}"-ро нест кунед? Ин амал бозгашт надорад.
+                Вы уверены, что хотите удалить категорию "{deleteDialog.title}"? Это действие нельзя отменить.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200">
-                Бекор кардан
+                Отмена
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteCategory}
                 className="rounded-xl bg-destructive/90 hover:bg-destructive backdrop-blur-sm border border-destructive/20 shadow-lg transition-all duration-200"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Нест кардан
+                Удалить
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>

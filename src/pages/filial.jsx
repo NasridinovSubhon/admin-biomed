@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { adminDataStore } from '@/app/zustand';
-import { Plus, Edit, Trash2, X, MapPin, Calendar, Building2, Phone, Clock, ExternalLink } from 'lucide-react';
+import { Plus, Edit, Trash2, X, MapPin, Calendar, Building2, Phone, Clock, ExternalLink, Upload } from 'lucide-react';
 import { toast } from "sonner";
 
 const Filial = () => {
@@ -42,6 +42,51 @@ const Filial = () => {
     loadData();
   }, [getDataFilial]);
 
+  // Функция для конвертации файла в base64
+  const convertToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  };
+
+  // Обработчик загрузки изображения
+  const handleImageUpload = async (event, isEdit = false) => {
+    const file = event.target.files[0];
+    if (file) {
+      // Проверка типа файла
+      if (!file.type.startsWith('image/')) {
+        toast.error("Пожалуйста, выберите только изображение");
+        return;
+      }
+
+      // Проверка размера файла (максимум 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Размер изображения должен быть меньше 5MB");
+        return;
+      }
+
+      try {
+        toast.loading("Изображение загружается...");
+        const base64 = await convertToBase64(file);
+
+        if (isEdit && editingFilial) {
+          setEditingFilial({ ...editingFilial, image: base64 });
+        } else {
+          setNewFilial({ ...newFilial, image: base64 });
+        }
+
+        toast.dismiss();
+        toast.success("Изображение успешно загружено");
+      } catch (error) {
+        toast.dismiss();
+        toast.error("Ошибка при загрузке изображения");
+      }
+    }
+  };
+
   // Функция для открытия Google Maps
   const openGoogleMaps = (filial) => {
     if (filial.coordinates && filial.coordinates.lat && filial.coordinates.lng) {
@@ -61,7 +106,7 @@ const Filial = () => {
     e.preventDefault();
 
     if (!newFilial.name || !newFilial.adres) {
-      toast.error("Лутфан ҳамаи майдонҳои зарурӣ пур кунед");
+      toast.error("Пожалуйста, заполните все обязательные поля");
       return;
     }
 
@@ -83,9 +128,9 @@ const Filial = () => {
         });
       },
       {
-        loading: "Илова кардани филиал...",
-        success: "Филиал бомуваффақият илова шуд!",
-        error: "Хатоги дар илова кардани филиал"
+        loading: "Добавление филиала...",
+        success: "Филиал успешно добавлен!",
+        error: "Ошибка при добавлении филиала"
       }
     );
   };
@@ -95,7 +140,7 @@ const Filial = () => {
     e.preventDefault();
 
     if (!editingFilial?.name || !editingFilial?.adres) {
-      toast.error("Лутфан ҳамаи майдонҳои зарурӣ пур кунед");
+      toast.error("Пожалуйста, заполните все обязательные поля");
       return;
     }
 
@@ -114,9 +159,9 @@ const Filial = () => {
         setEditingFilial(null);
       },
       {
-        loading: "Таҳрир кардани филиал...",
-        success: "Филиал бомуваффақият таҳрир шуд!",
-        error: "Хатоги дар таҳрир кардани филиал"
+        loading: "Редактирование филиала...",
+        success: "Филиал успешно отредактирован!",
+        error: "Ошибка при редактировании филиала"
       }
     );
   };
@@ -129,9 +174,9 @@ const Filial = () => {
         setDeleteDialog({ open: false, id: null, name: "" });
       },
       {
-        loading: "Нест кардани филиал...",
-        success: "Филиал бомуваффақият нест шуд!",
-        error: "Хатоги дар нест кардани филиал"
+        loading: "Удаление филиала...",
+        success: "Филиал успешно удален!",
+        error: "Ошибка при удалении филиала"
       }
     );
   };
@@ -176,7 +221,7 @@ const Filial = () => {
         <div className="text-center mb-16 flex items-center justify-between">
 
           <h1 className="text-3xl font-bold tracking-tight mb-2">
-            Филиалҳои мо
+            Наши филиалы
           </h1>
 
 
@@ -186,7 +231,7 @@ const Filial = () => {
             className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-300 hover:scale-105"
           >
             <Plus className="w-4 h-4 mr-2" />
-            Илова кардани филиал
+            Добавить филиал
           </Button>
         </div>
 
@@ -203,8 +248,8 @@ const Filial = () => {
               <div className="p-6 rounded-2xl bg-muted/30 backdrop-blur-sm border border-border/40 mb-6">
                 <Building2 className="w-16 h-16 text-muted-foreground" />
               </div>
-              <h3 className="text-2xl font-semibold mb-3">Филиалҳо пайдо нашуд</h3>
-              <p className="text-muted-foreground text-lg">Ягон филиал пайдо нашуд</p>
+              <h3 className="text-2xl font-semibold mb-3">Филиалы не найдены</h3>
+              <p className="text-muted-foreground text-lg">Филиалы не найдены</p>
             </div>
           </div>
         ) : (
@@ -253,7 +298,7 @@ const Filial = () => {
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center">
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/50 text-white px-3 py-1 rounded-full flex items-center gap-1 text-sm">
                       <MapPin className="h-3 w-3" />
-                      <span>Нигоҳ кардан дар харита</span>
+                      <span>Посмотреть на карте</span>
                       <ExternalLink className="h-3 w-3" />
                     </div>
                   </div>
@@ -268,7 +313,7 @@ const Filial = () => {
 
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    <span>Аз соли {filial.year}</span>
+                    <span>С {filial.year} года</span>
                   </div>
                 </CardHeader>
 
@@ -304,7 +349,7 @@ const Filial = () => {
                     className="w-full rounded-xl bg-background/50 backdrop-blur-sm border-border/40 hover:bg-green-500/20 hover:border-green-300/50 transition-all duration-300 group/map"
                   >
                     <MapPin className="h-4 w-4 mr-2 group-hover/map:scale-110 transition-transform duration-300" />
-                    Нигоҳ кардан дар Google Maps
+                    Посмотреть в Google Maps
                   </Button>
                 </CardContent>
 
@@ -321,16 +366,16 @@ const Filial = () => {
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Plus className="h-5 w-5 text-primary" />
-                Илова кардани филиали нав
+                Добавление нового филиала
               </DialogTitle>
               <DialogDescription>
-                Маълумоти филиали навро ворид кунед
+                Введите информацию о новом филиале
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleAddFilial} className="space-y-6 py-2">
               <div className="space-y-3">
                 <Label htmlFor="name" className="text-sm font-medium text-foreground/80">
-                  Номи филиал *
+                  Название филиала *
                 </Label>
                 <Input
                   id="name"
@@ -344,7 +389,7 @@ const Filial = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="year" className="text-sm font-medium text-foreground/80">
-                  Соли таъсис *
+                  Год основания *
                 </Label>
                 <Input
                   id="year"
@@ -360,7 +405,7 @@ const Filial = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="adres" className="text-sm font-medium text-foreground/80">
-                  Суроға *
+                  Адрес *
                 </Label>
                 <Textarea
                   id="adres"
@@ -374,7 +419,7 @@ const Filial = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="phone" className="text-sm font-medium text-foreground/80">
-                  Рақами телефон
+                  Номер телефона
                 </Label>
                 <Input
                   id="phone"
@@ -387,7 +432,7 @@ const Filial = () => {
 
               <div className="space-y-3">
                 <Label htmlFor="workHours" className="text-sm font-medium text-foreground/80">
-                  Соатҳои корӣ
+                  Часы работы
                 </Label>
                 <Input
                   id="workHours"
@@ -398,23 +443,60 @@ const Filial = () => {
                 />
               </div>
 
+              {/* Поле для загрузки изображения */}
               <div className="space-y-3">
-                <Label htmlFor="image" className="text-sm font-medium text-foreground/80">
-                  URL-и сурат
+                <Label className="text-sm font-medium text-foreground/80">
+                  Изображение филиала
                 </Label>
-                <Input
-                  id="image"
-                  value={newFilial.image}
-                  onChange={(e) => setNewFilial({ ...newFilial, image: e.target.value })}
-                  placeholder="https://images.unsplash.com/photo-..."
-                  className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                />
+
+                {/* Предпросмотр изображения */}
+                <div className="flex justify-center mb-3">
+                  <div className="relative w-full h-48 border-2 border-dashed border-border/50 rounded-xl overflow-hidden">
+                    <img
+                      src={newFilial.image || "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&h=400&fit=crop"}
+                      alt="Preview"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                </div>
+
+                {/* Загрузка файла */}
+                <div className="space-y-2">
+                  <Label htmlFor="file-upload" className="flex items-center justify-center gap-2 cursor-pointer">
+                    <Upload className="h-5 w-5" />
+                    Загрузить изображение с компьютера
+                  </Label>
+                  <Input
+                    id="file-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageUpload(e, false)}
+                    className="hidden"
+                  />
+                  <p className="text-xs text-muted-foreground text-center">
+                    Разрешенные форматы: JPG, PNG, GIF. Максимальный размер: 5MB
+                  </p>
+                </div>
+
+                {/* Альтернативно: URL изображения */}
+                {/* <div className="space-y-2 mt-4">
+                  <Label htmlFor="image-url" className="text-sm font-medium text-foreground/80">
+                    Или введите URL изображения
+                  </Label>
+                  <Input
+                    id="image-url"
+                    value={newFilial.image}
+                    onChange={(e) => setNewFilial({ ...newFilial, image: e.target.value })}
+                    placeholder="https://images.unsplash.com/photo-..."
+                    className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                  />
+                </div> */}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <Label htmlFor="lat" className="text-sm font-medium text-foreground/80">
-                    Latitude
+                    Широта
                   </Label>
                   <Input
                     id="lat"
@@ -435,7 +517,7 @@ const Filial = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="lng" className="text-sm font-medium text-foreground/80">
-                    Longitude
+                    Долгота
                   </Label>
                   <Input
                     id="lng"
@@ -477,14 +559,14 @@ const Filial = () => {
                   className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200"
                 >
                   <X className="w-4 h-4 mr-2" />
-                  Бекор кардан
+                  Отмена
                 </Button>
                 <Button
                   type="submit"
                   className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-200"
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Илова кардан
+                  Добавить
                 </Button>
               </div>
             </form>
@@ -497,17 +579,17 @@ const Filial = () => {
             <DialogHeader className="border-b border-border/30 pb-4">
               <DialogTitle className="text-xl font-semibold flex items-center gap-2">
                 <Edit className="h-5 w-5 text-primary" />
-                Таҳрир кардани филиал
+                Редактирование филиала
               </DialogTitle>
               <DialogDescription>
-                Маълумоти филиалро таҳрир кунед
+                Отредактируйте информацию о филиале
               </DialogDescription>
             </DialogHeader>
             {editingFilial && (
               <form onSubmit={handleEditFilial} className="space-y-6 py-2">
                 <div className="space-y-3">
                   <Label htmlFor="edit-name" className="text-sm font-medium text-foreground/80">
-                    Номи филиал *
+                    Название филиала *
                   </Label>
                   <Input
                     id="edit-name"
@@ -520,7 +602,7 @@ const Filial = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-year" className="text-sm font-medium text-foreground/80">
-                    Соли таъсис *
+                    Год основания *
                   </Label>
                   <Input
                     id="edit-year"
@@ -536,7 +618,7 @@ const Filial = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-adres" className="text-sm font-medium text-foreground/80">
-                    Суроға *
+                    Адрес *
                   </Label>
                   <Textarea
                     id="edit-adres"
@@ -549,7 +631,7 @@ const Filial = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-phone" className="text-sm font-medium text-foreground/80">
-                    Рақами телефон
+                    Номер телефона
                   </Label>
                   <Input
                     id="edit-phone"
@@ -561,7 +643,7 @@ const Filial = () => {
 
                 <div className="space-y-3">
                   <Label htmlFor="edit-workHours" className="text-sm font-medium text-foreground/80">
-                    Соатҳои корӣ
+                    Часы работы
                   </Label>
                   <Input
                     id="edit-workHours"
@@ -571,22 +653,59 @@ const Filial = () => {
                   />
                 </div>
 
+                {/* Поле для загрузки изображения */}
                 <div className="space-y-3">
-                  <Label htmlFor="edit-image" className="text-sm font-medium text-foreground/80">
-                    URL-и сурат
+                  <Label className="text-sm font-medium text-foreground/80">
+                    Изображение филиала
                   </Label>
-                  <Input
-                    id="edit-image"
-                    value={editingFilial.image || ''}
-                    onChange={(e) => setEditingFilial({ ...editingFilial, image: e.target.value })}
-                    className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                  />
+
+                  {/* Предпросмотр изображения */}
+                  <div className="flex justify-center mb-3">
+                    <div className="relative w-full h-48 border-2 border-dashed border-border/50 rounded-xl overflow-hidden">
+                      <img
+                        src={editingFilial.image || "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&h=400&fit=crop"}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Загрузка файла */}
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-file-upload" className="flex items-center justify-center gap-2 cursor-pointer">
+                      <Upload className="h-5 w-5" />
+                      Загрузить изображение с компьютера
+                    </Label>
+                    <Input
+                      id="edit-file-upload"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, true)}
+                      className="hidden"
+                    />
+                    <p className="text-xs text-muted-foreground text-center">
+                      Разрешенные форматы: JPG, PNG, GIF. Максимальный размер: 5MB
+                    </p>
+                  </div>
+
+                  {/* Альтернативно: URL изображения */}
+                  <div className="space-y-2 mt-4">
+                    <Label htmlFor="edit-image-url" className="text-sm font-medium text-foreground/80">
+                      Или введите URL изображения
+                    </Label>
+                    <Input
+                      id="edit-image-url"
+                      value={editingFilial.image || ''}
+                      onChange={(e) => setEditingFilial({ ...editingFilial, image: e.target.value })}
+                      className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                    />
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
                     <Label htmlFor="edit-lat" className="text-sm font-medium text-foreground/80">
-                      Latitude
+                      Широта
                     </Label>
                     <Input
                       id="edit-lat"
@@ -606,7 +725,7 @@ const Filial = () => {
 
                   <div className="space-y-3">
                     <Label htmlFor="edit-lng" className="text-sm font-medium text-foreground/80">
-                      Longitude
+                      Долгота
                     </Label>
                     <Input
                       id="edit-lng"
@@ -636,14 +755,14 @@ const Filial = () => {
                     className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200"
                   >
                     <X className="w-4 h-4 mr-2" />
-                    Бекор кардан
+                    Отмена
                   </Button>
                   <Button
                     type="submit"
                     className="rounded-xl bg-primary/90 hover:bg-primary backdrop-blur-sm border border-primary/20 shadow-lg transition-all duration-200"
                   >
                     <Edit className="w-4 h-4 mr-2" />
-                    Таҳрир кардан
+                    Редактировать
                   </Button>
                 </div>
               </form>
@@ -657,22 +776,22 @@ const Filial = () => {
             <AlertDialogHeader>
               <AlertDialogTitle className="flex items-center gap-2 text-lg">
                 <Trash2 className="h-5 w-5 text-destructive" />
-                Филиалро нест кардан?
+                Удалить филиал?
               </AlertDialogTitle>
               <AlertDialogDescription className="text-muted-foreground">
-                Шумо боварӣ доред, ки мехоҳед филиали "{deleteDialog.name}"-ро нест кунед? Ин амал бозгашт надорад.
+                Вы уверены, что хотите удалить филиал "{deleteDialog.name}"? Это действие нельзя отменить.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel className="rounded-xl border-border/50 bg-background/50 backdrop-blur-sm hover:bg-background/80 transition-all duration-200">
-                Бекор кардан
+                Отмена
               </AlertDialogCancel>
               <AlertDialogAction
                 onClick={handleDeleteFilial}
                 className="rounded-xl bg-destructive/90 hover:bg-destructive backdrop-blur-sm border border-destructive/20 shadow-lg transition-all duration-200"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
-                Нест кардан
+                Удалить
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
