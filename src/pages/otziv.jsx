@@ -1,3 +1,5 @@
+
+
 import { useEffect, useState, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -41,11 +43,7 @@ const Otziv = () => {
   const videoRefs = useRef([]);
 
   const [newReview, setNewReview] = useState({
-    name: "",
-    position: "",
     videoBase64: "",
-    videoFileName: "",
-    description: "",
     rating: 5,
     date: new Date().toISOString().split('T')[0]
   });
@@ -152,11 +150,7 @@ const Otziv = () => {
         await postReview(newReview);
         setShowAddForm(false);
         setNewReview({
-          name: "",
-          position: "",
           videoBase64: "",
-          videoFileName: "",
-          description: "",
           rating: 5,
           date: new Date().toISOString().split('T')[0]
         });
@@ -227,7 +221,7 @@ const Otziv = () => {
     setDeleteDialog({
       open: true,
       id: review.id,
-      name: review.name || "Без имени"
+      name: review.name || ""
     });
   };
 
@@ -543,6 +537,47 @@ const Otziv = () => {
                 </div>
               </div>
 
+              {/* Добавлен рейтинг в форму добавления */}
+              <div className="space-y-3">
+                <Label htmlFor="rating" className="text-sm font-medium text-foreground/80">
+                  Рейтинг
+                </Label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => setNewReview({ ...newReview, rating: star })}
+                      className="p-1 hover:scale-110 transition-transform duration-200"
+                    >
+                      <Star
+                        className={`h-6 w-6 ${star <= newReview.rating
+                          ? "text-yellow-400 fill-yellow-400"
+                          : "text-gray-300"
+                          }`}
+                      />
+                    </button>
+                  ))}
+                  <span className="text-sm text-muted-foreground ml-2">
+                    {newReview.rating}.0
+                  </span>
+                </div>
+              </div>
+
+              {/* Добавлена дата в форму добавления */}
+              {/* <div className="space-y-3">
+                <Label htmlFor="date" className="text-sm font-medium text-foreground/80">
+                  Дата
+                </Label>
+                <Input
+                  id="date"
+                  type="date"
+                  value={newReview.date}
+                  onChange={(e) => setNewReview({ ...newReview, date: e.target.value })}
+                  className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
+                />
+              </div> */}
+
               <div className="flex justify-end space-x-3 pt-4 border-t border-border/30">
                 <Button
                   type="button"
@@ -591,31 +626,7 @@ const Otziv = () => {
             </DialogHeader>
             {editingReview && (
               <form onSubmit={handleEditReview} className="space-y-6 py-2">
-                <div className="space-y-3">
-                  <Label htmlFor="edit-name" className="text-sm font-medium text-foreground/80">
-                    Имя пациента
-                  </Label>
-                  <Input
-                    id="edit-name"
-                    value={editingReview.name || ''}
-                    onChange={(e) => setEditingReview({ ...editingReview, name: e.target.value })}
-                    className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                    placeholder="Имя (необязательно)"
-                  />
-                </div>
 
-                <div className="space-y-3">
-                  <Label htmlFor="edit-position" className="text-sm font-medium text-foreground/80">
-                    Должность или услуга
-                  </Label>
-                  <Input
-                    id="edit-position"
-                    value={editingReview.position || ''}
-                    onChange={(e) => setEditingReview({ ...editingReview, position: e.target.value })}
-                    className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                    placeholder="Должность или услуга"
-                  />
-                </div>
 
                 {/* Поле загрузки видео для редактирования */}
                 <div className="space-y-3">
@@ -665,6 +676,7 @@ const Otziv = () => {
                   </div>
                 </div>
 
+
                 <div className="space-y-3">
                   <Label htmlFor="edit-rating" className="text-sm font-medium text-foreground/80">
                     Рейтинг
@@ -701,19 +713,6 @@ const Otziv = () => {
                     value={editingReview.date || new Date().toISOString().split('T')[0]}
                     onChange={(e) => setEditingReview({ ...editingReview, date: e.target.value })}
                     className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                  />
-                </div>
-
-                <div className="space-y-3">
-                  <Label htmlFor="edit-description" className="text-sm font-medium text-foreground/80">
-                    Краткое описание
-                  </Label>
-                  <Textarea
-                    id="edit-description"
-                    value={editingReview.description || ''}
-                    onChange={(e) => setEditingReview({ ...editingReview, description: e.target.value })}
-                    className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200 min-h-[80px]"
-                    placeholder="Краткое описание отзыва..."
                   />
                 </div>
 

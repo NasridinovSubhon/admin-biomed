@@ -393,13 +393,11 @@ const TableComponent = () => {
             ),
             success: (
               <div className="flex items-center gap-2">
-                <CircleCheckBig className="h-4 w-4 text-green-500" />
                 Записи успешно удалены!
               </div>
             ),
             error: (
               <div className="flex items-center gap-2">
-                <CircleCheckBig className="h-4 w-4 text-red-500" />
                 Ошибка при удалении записей
               </div>
             )

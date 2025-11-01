@@ -54,7 +54,7 @@ const Doctors = () => {
   const [newDoctor, setNewDoctor] = useState({
     name: "",
     img: defaultDoctorImages[0],
-    specialty: "",
+    specialtyId: "", // Изменено с specialty на specialtyId
     qualifications: "",
     education: "",
     professional_activity: "",
@@ -87,32 +87,25 @@ const Doctors = () => {
     return serviceName;
   };
 
-  // Функция для получения списка специализаций из категорий (только sohaiKlinik)
-  const getSpecialtiesFromCategories = () => {
-    if (!dataCateg || dataCateg.length === 0) return [];
-
-    // Создаем Set для удаления дубликатов
-    const uniqueSpecialties = new Set();
-
-    dataCateg.forEach(category => {
-      if (category.sohaiKlinik) {
-        uniqueSpecialties.add(category.sohaiKlinik);
-      }
-    });
-
-    // Преобразуем Set обратно в массив объектов
-    return Array.from(uniqueSpecialties).map((specialty, index) => ({
-      id: index + 1, // Простой ID на основе индекса
-      name: getCorrectedServiceName(specialty),
-      value: specialty
-    }));
+  // Функция для получения названия специализации по ID
+  const getSpecialtyNameById = (specialtyId) => {
+    if (!dataCateg || !specialtyId) return "";
+    const category = dataCateg.find(c => c.id === specialtyId);
+    return category ? getCorrectedServiceName(category.sohaiKlinik) : "";
   };
 
-  // Функция для получения названия специализации по значению
+  // Функция для получения названия специализации по значению (для обратной совместимости)
   const getSpecialtyName = (specialtyValue) => {
-    const specialties = getSpecialtiesFromCategories();
-    const specialty = specialties.find(s => s.value === specialtyValue);
-    return specialty ? specialty.name : specialtyValue;
+    // Если specialtyValue - это ID (число), используем новую функцию
+    if (typeof specialtyValue === 'number') {
+      return getSpecialtyNameById(specialtyValue);
+    }
+
+    // Если это строка (старый формат), ищем по названию
+    if (!dataCateg || dataCateg.length === 0) return specialtyValue;
+
+    const category = dataCateg.find(c => c.sohaiKlinik === specialtyValue);
+    return category ? getCorrectedServiceName(category.sohaiKlinik) : specialtyValue;
   };
 
   // Функция для конвертации файла в base64
@@ -162,19 +155,23 @@ const Doctors = () => {
   const handleAddDoctor = async (e) => {
     e.preventDefault();
 
-    if (!newDoctor.name || !newDoctor.qualifications || !newDoctor.education || !newDoctor.specialty) {
+    if (!newDoctor.name || !newDoctor.qualifications || !newDoctor.education || !newDoctor.specialtyId) {
       toast.error("Пожалуйста, заполните все обязательные поля");
       return;
     }
 
     toast.promise(
       async () => {
-        await postDoctor(newDoctor);
+        // Отправляем данные с specialtyId вместо specialty
+        await postDoctor({
+          ...newDoctor,
+          specialtyId: parseInt(newDoctor.specialtyId) // Преобразуем в число
+        });
         setShowAddForm(false);
         setNewDoctor({
           name: "",
           img: defaultDoctorImages[0],
-          specialty: "",
+          specialtyId: "", // Сбрасываем на пустую строку
           qualifications: "",
           education: "",
           professional_activity: "",
@@ -203,17 +200,18 @@ const Doctors = () => {
   const handleEditDoctor = async (e) => {
     e.preventDefault();
 
-    if (!editingDoctor?.name || !editingDoctor?.qualifications || !editingDoctor?.education || !editingDoctor?.specialty) {
+    if (!editingDoctor?.name || !editingDoctor?.qualifications || !editingDoctor?.education || !editingDoctor?.specialtyId) {
       toast.error("Пожалуйста, заполните все обязательные поля");
       return;
     }
 
     toast.promise(
       async () => {
+        // Отправляем данные с specialtyId вместо specialty
         await updateDoctor(editingDoctor.id, {
           name: editingDoctor.name,
           img: editingDoctor.img,
-          specialty: editingDoctor.specialty,
+          specialtyId: parseInt(editingDoctor.specialtyId), // Преобразуем в число
           qualifications: editingDoctor.qualifications,
           education: editingDoctor.education,
           professional_activity: editingDoctor.professional_activity,
@@ -250,7 +248,10 @@ const Doctors = () => {
 
   // Функция для открытия формы редактирования
   const openEditForm = (doctor) => {
-    setEditingDoctor(doctor);
+    setEditingDoctor({
+      ...doctor,
+      specialtyId: doctor.specialtyId?.toString() || "" // Преобразуем в строку для Select
+    });
     setShowEditForm(true);
   };
 
@@ -309,8 +310,6 @@ const Doctors = () => {
     </div>
   );
 
-  const specialties = getSpecialtiesFromCategories();
-
   return (
     <div className="min-h-screen bg-transparent p-6">
       <div className="max-w-7xl mx-auto">
@@ -323,14 +322,14 @@ const Doctors = () => {
           <Button
             onClick={() => setShowAddForm(true)}
             className="rounded-lg bg-primary hover:bg-primary/90"
-            disabled={specialties.length === 0}
+            disabled={!dataCateg || dataCateg.length === 0}
           >
             <Plus className="w-4 h-4 mr-2" />
             Добавить врача
           </Button>
         </div>
 
-        {specialties.length === 0 && !isLoading && (
+        {(!dataCateg || dataCateg.length === 0) && !isLoading && (
           <div className="mb-6 p-4 border border-yellow-200 bg-yellow-50 rounded-lg">
             <p className="text-yellow-800">
               Категории не найдены. Пожалуйста, сначала добавьте категории, чтобы можно было добавлять врачей.
@@ -388,7 +387,7 @@ const Doctors = () => {
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary" className="rounded-lg">
-                          {getSpecialtyName(doctor.specialty)}
+                          {getSpecialtyName(doctor.specialtyId || doctor.specialty)}
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -460,20 +459,20 @@ const Doctors = () => {
                 </div>
 
                 <div className="space-y-3">
-                  <Label htmlFor="specialty" className="text-sm font-medium">
+                  <Label htmlFor="specialtyId" className="text-sm font-medium">
                     Специализация *
                   </Label>
                   <Select
-                    value={newDoctor.specialty}
-                    onValueChange={(value) => setNewDoctor({ ...newDoctor, specialty: value })}
+                    value={newDoctor.specialtyId}
+                    onValueChange={(value) => setNewDoctor({ ...newDoctor, specialtyId: value })}
                   >
                     <SelectTrigger className="rounded-lg">
                       <SelectValue placeholder="Выберите специализацию" />
                     </SelectTrigger>
                     <SelectContent>
-                      {specialties.map((specialty) => (
-                        <SelectItem key={specialty.id} value={specialty.value}>
-                          {specialty.name}
+                      {dataCateg?.map((category) => (
+                        <SelectItem key={category.id} value={category.id.toString()}>
+                          {getCorrectedServiceName(category.sohaiKlinik)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -482,7 +481,7 @@ const Doctors = () => {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="qualifications" className="text-sm font-medium">
+                <Label htmlFor="professional_activity" className="text-sm font-medium">
                   О враче
                 </Label>
                 <Textarea
@@ -509,8 +508,8 @@ const Doctors = () => {
               </div>
 
               <div className="space-y-3">
-                <Label htmlFor="professional_activity" className="text-sm font-medium">
-                  Квалификация
+                <Label htmlFor="qualifications" className="text-sm font-medium">
+                  Квалификация *
                 </Label>
                 <Input
                   id="qualifications"
@@ -637,7 +636,7 @@ const Doctors = () => {
                 <Button
                   type="submit"
                   className="rounded-lg bg-primary hover:bg-primary/90"
-                  disabled={!newDoctor.specialty}
+                  disabled={!newDoctor.specialtyId}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Добавить
@@ -676,20 +675,20 @@ const Doctors = () => {
                   </div>
 
                   <div className="space-y-3">
-                    <Label htmlFor="edit-specialty" className="text-sm font-medium">
+                    <Label htmlFor="edit-specialtyId" className="text-sm font-medium">
                       Специализация *
                     </Label>
                     <Select
-                      value={editingDoctor.specialty}
-                      onValueChange={(value) => setEditingDoctor({ ...editingDoctor, specialty: value })}
+                      value={editingDoctor.specialtyId}
+                      onValueChange={(value) => setEditingDoctor({ ...editingDoctor, specialtyId: value })}
                     >
                       <SelectTrigger className="rounded-lg">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {specialties.map((specialty) => (
-                          <SelectItem key={specialty.id} value={specialty.value}>
-                            {specialty.name}
+                        {dataCateg?.map((category) => (
+                          <SelectItem key={category.id} value={category.id.toString()}>
+                            {getCorrectedServiceName(category.sohaiKlinik)}
                           </SelectItem>
                         ))}
                       </SelectContent>

@@ -10,149 +10,217 @@ export const adminDataStore = create((set, get) => ({
   dataReviews: [],
 
   getDataCategory: async () => {
-    try {
-      const { data } = await axios.get(`https://cf6305f8832a1b76.mokky.dev/category`)
-      set({ dataCateg: data })
-    } catch (error) { console.error(error) }
+    const response = await fetch('http://localhost:5000/categories');
+    const data = await response.json();
+    set({ dataCateg: data });
   },
 
+  postCategory: async (categoryData) => {
+    const response = await fetch('http://localhost:5000/categories', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(categoryData)
+    });
+    const newCategory = await response.json();
+    set(state => ({ dataCateg: [...state.dataCateg, newCategory] }));
+  },
+
+  updateCategory: async (id, categoryData) => {
+    const numericId = Number(id);
+    const response = await fetch(`http://localhost:5000/categories/${numericId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(categoryData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update category');
+    }
+
+    const updatedCategory = await response.json();
+    set(state => ({
+      dataCateg: state.dataCateg.map(category =>
+        category.id === numericId ? updatedCategory : category
+      )
+    }));
+  },
+
+  deleteCategory: async (id) => {
+    const numericId = Number(id);
+    await fetch(`http://localhost:5000/categories/${numericId}`, {
+      method: 'DELETE'
+    });
+    set(state => ({
+      dataCateg: state.dataCateg.filter(category => category.id !== numericId)
+    }));
+  },
+
+  // В вашем Zustand store добавьте:
   getDataFilial: async () => {
     try {
-      const { data } = await axios.get(`https://cf6305f8832a1b76.mokky.dev/filial`)
+      const { data } = await axios.get(`http://localhost:5000/filials`)
       set({ dataFilial: data })
     } catch (error) { console.error(error) }
   },
 
+  getDataFilialById: async (id) => {
+    try {
+      const { data } = await axios.get(`http://localhost:5000/filials/${id}`)
+      set({ dataFilialById: data })
+    } catch (error) { console.error(error) }
+  },
+
+  postFilial: async (obj) => {
+    try {
+      await axios.post(`http://localhost:5000/filials`, obj)
+      get().getDataFilial()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  },
+
+  updateFilial: async (id, obj) => {
+    try {
+      await axios.patch(`http://localhost:5000/filials/${id}`, obj)
+      get().getDataFilial()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  },
+
+  deleteFilial: async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/filials/${id}`)
+      get().getDataFilial()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  },
   // Исправленный метод для отзывов
   getDataReviews: async () => {
     try {
-      const { data } = await axios.get(`https://cf6305f8832a1b76.mokky.dev/otziv`) // исправлен endpoint
+      const { data } = await axios.get(`http://localhost:5000/reviews`) // исправлен endpoint
       set({ dataReviews: data })
     } catch (error) { console.error(error) }
   },
 
-  getDataCategoryById: async (id) => {
-    try {
-      const { data } = await axios.get(`https://cf6305f8832a1b76.mokky.dev/category/${id}`)
-      set({ dataCategById: data })
-    } catch (error) { console.error(error) }
-  },
 
   getDataDoctors: async () => {
     try {
-      const { data } = await axios.get(`https://cf6305f8832a1b76.mokky.dev/doctors`)
+      const { data } = await axios.get(`http://localhost:5000/doctors`)
       set({ dataDoctors: data })
     } catch (error) { console.error(error) }
   },
 
+  postDoctor: async (obj) => {
+    try {
+      await axios.post(`http://localhost:5000/doctors`, obj)
+      get().getDataDoctors()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  },
+
+  updateDoctor: async (id, obj) => {
+    try {
+      await axios.patch(`http://localhost:5000/doctors/${id}`, obj)
+      get().getDataDoctors()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  },
+
+  deleteDoctor: async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/doctors/${id}`)
+      get().getDataDoctors()
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
+  },
+
   getZapis: async () => {
     try {
-      const { data } = await axios.get(`https://cf6305f8832a1b76.mokky.dev/zapis`)
+      const { data } = await axios.get(`http://localhost:5000/zapisi`)
       set({ dataZapis: data })
     } catch (error) { console.error(error) }
   },
 
   postZapis: async (obj) => {
     try {
-      await axios.post(`https://cf6305f8832a1b76.mokky.dev/zapis`, obj)
+      await axios.post(`http://localhost:5000/zapisi`, obj)
       get().getZapis()
-    } catch (error) { console.error(error) }
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   },
 
   deleteZapis: async (id) => {
     try {
-      await axios.delete(`https://cf6305f8832a1b76.mokky.dev/zapis/${id}`)
+      await axios.delete(`http://localhost:5000/zapisi/${id}`)
       get().getZapis()
-    } catch (error) { console.error(error) }
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   },
 
   // Новые методы для категорий
-  postCategory: async (obj) => {
-    try {
-      await axios.post(`https://cf6305f8832a1b76.mokky.dev/category`, obj)
-      get().getDataCategory()
-    } catch (error) { console.error(error) }
-  },
-
-  updateCategory: async (id, obj) => {
-    try {
-      await axios.patch(`https://cf6305f8832a1b76.mokky.dev/category/${id}`, obj)
-      get().getDataCategory()
-    } catch (error) { console.error(error) }
-  },
-
-  deleteCategory: async (id) => {
-    try {
-      await axios.delete(`https://cf6305f8832a1b76.mokky.dev/category/${id}`)
-      get().getDataCategory()
-    } catch (error) { console.error(error) }
-  },
 
   // Методы для докторов
-  postDoctor: async (obj) => {
-    try {
-      await axios.post(`https://cf6305f8832a1b76.mokky.dev/doctors`, obj)
-      get().getDataDoctors()
-    } catch (error) { console.error(error) }
-  },
 
-  updateDoctor: async (id, obj) => {
-    try {
-      await axios.patch(`https://cf6305f8832a1b76.mokky.dev/doctors/${id}`, obj)
-      get().getDataDoctors()
-    } catch (error) { console.error(error) }
-  },
-
-  deleteDoctor: async (id) => {
-    try {
-      await axios.delete(`https://cf6305f8832a1b76.mokky.dev/doctors/${id}`)
-      get().getDataDoctors()
-    } catch (error) { console.error(error) }
-  },
 
   // Методы для филиалов
-  postFilial: async (obj) => {
-    try {
-      await axios.post(`https://cf6305f8832a1b76.mokky.dev/filial`, obj)
-      get().getDataFilial()
-    } catch (error) { console.error(error) }
-  },
 
-  updateFilial: async (id, obj) => {
-    try {
-      await axios.patch(`https://cf6305f8832a1b76.mokky.dev/filial/${id}`, obj)
-      get().getDataFilial()
-    } catch (error) { console.error(error) }
-  },
 
-  deleteFilial: async (id) => {
+  postReview: async (fd) => {
     try {
-      await axios.delete(`https://cf6305f8832a1b76.mokky.dev/filial/${id}`)
-      get().getDataFilial()
-    } catch (error) { console.error(error) }
-  },
-
-  // Новые методы для видео-отзывов
-  postReview: async (obj) => {
-    try {
-      await axios.post(`https://cf6305f8832a1b76.mokky.dev/otziv`, obj)
+      await axios.post("http://localhost:5000/reviews", fd);
       get().getDataReviews()
-    } catch (error) { console.error(error) }
+    } catch (err) {
+      console.error("Ошибка postReview:", err.response?.data || err.message);
+      throw err;
+    }
   },
 
-  updateReview: async (id, obj) => {
-    try {
 
-      await axios.patch(`https://cf6305f8832a1b76.mokky.dev/otziv/${id}`, obj)
-      get().getDataReviews()
-    } catch (error) { console.error(error) }
+  // В функции updateReview убедитесь, что ID передается как число
+  updateReview: async (id, reviewData) => {
+    const numericId = Number(id);
+    const response = await fetch(`http://localhost:5000/reviews/${numericId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reviewData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to update review');
+    }
+
+    const updatedReview = await response.json();
+    set(state => ({
+      dataReviews: state.dataReviews.map(review =>
+        review.id === numericId ? updatedReview : review
+      )
+    }));
+
   },
 
   deleteReview: async (id) => {
     try {
-      await axios.delete(`https://cf6305f8832a1b76.mokky.dev/otziv/${id}`)
+      await axios.delete(`http://localhost:5000/reviews/${id}`)
       get().getDataReviews()
-    } catch (error) { console.error(error) }
+    } catch (error) {
+      console.error(error)
+      throw error
+    }
   }
 
 }))

@@ -477,20 +477,6 @@ const Filial = () => {
                     Разрешенные форматы: JPG, PNG, GIF. Максимальный размер: 5MB
                   </p>
                 </div>
-
-                {/* Альтернативно: URL изображения */}
-                {/* <div className="space-y-2 mt-4">
-                  <Label htmlFor="image-url" className="text-sm font-medium text-foreground/80">
-                    Или введите URL изображения
-                  </Label>
-                  <Input
-                    id="image-url"
-                    value={newFilial.image}
-                    onChange={(e) => setNewFilial({ ...newFilial, image: e.target.value })}
-                    placeholder="https://images.unsplash.com/photo-..."
-                    className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                  />
-                </div> */}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -686,19 +672,6 @@ const Filial = () => {
                     <p className="text-xs text-muted-foreground text-center">
                       Разрешенные форматы: JPG, PNG, GIF. Максимальный размер: 5MB
                     </p>
-                  </div>
-
-                  {/* Альтернативно: URL изображения */}
-                  <div className="space-y-2 mt-4">
-                    <Label htmlFor="edit-image-url" className="text-sm font-medium text-foreground/80">
-                      Или введите URL изображения
-                    </Label>
-                    <Input
-                      id="edit-image-url"
-                      value={editingFilial.image || ''}
-                      onChange={(e) => setEditingFilial({ ...editingFilial, image: e.target.value })}
-                      className="rounded-xl bg-background/50 backdrop-blur-sm border-border/50 focus:ring-2 focus:ring-primary/20 transition-all duration-200"
-                    />
                   </div>
                 </div>
 
